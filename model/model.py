@@ -1,5 +1,5 @@
-import basic_backend
-import mvc_exceptions
+import controller.basic_backend as basic_backend
+import exceptions.mvc_exceptions as mvc_exceptions
 
 
 class ModelBasic(object):

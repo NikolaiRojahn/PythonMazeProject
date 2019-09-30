@@ -1,8 +1,10 @@
 # program.py
 
-import controller
-import model
-import view
+from controller import controller
+#import controller.controller as controller
+import model.model as model
+import view.view as view
+
 # small program to test MVC from tutorial.
 
 

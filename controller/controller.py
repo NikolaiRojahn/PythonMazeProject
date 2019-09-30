@@ -1,6 +1,6 @@
 # controller.py
-import mvc_exceptions
-
+#import exceptions.mvc_exceptions as mvc_exceptions
+from exceptions import mvc_exceptions
 
 class Controller(object):
 
