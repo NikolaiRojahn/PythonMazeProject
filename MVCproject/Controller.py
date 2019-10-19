@@ -6,23 +6,27 @@ from Solve import Solve
 from Calculator import Calculator
 
 if __name__ == '__main__':
-    i = 1
-    size = 5
-    runLoop = 10
-    timerTotal = TimerTotal()
-    while i < runLoop:
-        maze = Maze(size)
-        timer = Timer()
-        counter = Counter()
-        solve = Solve(maze, counter)
+    sizes = [5, 10, 15, 20, 25, 30]
+    runLoop = 2
 
-        print(maze.pretty_print())
-        timer.StartTimer()
-        solve.search(1, 1)
-        print(counter.GetNumberOfPointsVisitedWithText())
-        timer.EndTimer()
-        print(timer.GetTimerWithText())
-        timerTotal.setTotalTimer(timer.GetTimer())
-        i += 1
-    calculator = Calculator(timerTotal.GetTimer(), runLoop)
-    print(calculator.GetTimerAverage())
+    for size in sizes:
+        print(15 * "*" + str(size) + 15*"*")
+        timerTotal = TimerTotal()
+        i = 0
+        while i < runLoop:
+            maze = Maze(size)
+            timer = Timer()
+            counter = Counter()
+            solve = Solve(maze, counter)
+
+            print(maze.pretty_print())
+            timer.StartTimer()
+            # pass in True as last argument to see print outs from search(...)
+            solve.search(1, 1)
+            print(counter.GetNumberOfPointsVisitedWithText())
+            timer.EndTimer()
+            print(timer.GetTimerWithText())
+            timerTotal.setTotalTimer(timer.GetTimer())
+            i += 1
+        calculator = Calculator(timerTotal.GetTimer(), runLoop)
+        print(calculator.GetTimerAverage())
