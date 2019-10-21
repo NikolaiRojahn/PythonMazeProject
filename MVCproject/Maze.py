@@ -1,4 +1,5 @@
 from random import shuffle
+from File import FileHandler
 
 import sys
 #needed for DFS...
@@ -12,6 +13,8 @@ class Maze:
     def __init__(self, size):
         self.size = size
         self.create()
+        f = FileHandler()
+        f.testMe(self.convertedMaze)
     
     def create(self):
         self.maze = self.DFG(self.make_empty_maze())

@@ -1,3 +1,4 @@
+
 class Solve:
 
     def __init__(self, Maze, Counter):
