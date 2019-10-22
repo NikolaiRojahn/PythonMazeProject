@@ -9,7 +9,7 @@ from Calculator import Calculator
 
 
 class Controller(object):
-
+    mazes = list()
     sizes = [5, 10, 15, 20, 25, 30]
     genAlgorithms = ["dfg"]
     solveAlgorithms = ["dfs"]
@@ -52,8 +52,10 @@ class Controller(object):
                 # parse the read in labyrinths.
                 # solve using selected algorithm.
             else:  # (no input file)
-                pass
-                # create using chosen algorithm.
+                # create 10 mazes of given size, store in array.
+                for x in range(10):
+                    self.mazes.insert(x, Maze(self.size))
+
                 # if output file is given
                 # write file with mazes.
                 # solve using selected algorithm.
@@ -117,7 +119,6 @@ class Controller(object):
     #         counter = Counter()
     #         solve = Solve(maze, counter)
 
-
     #         print(maze.pretty_print())
     #         timer.StartTimer()
     #         # pass in True as last argument to see print outs from search(...)
@@ -130,6 +131,6 @@ class Controller(object):
     #     calculator = Calculator(timerTotal.GetTimer(), runLoop)
     #     print(calculator.GetTimerAverage())
 if __name__ == '__main__':
-        # print(sys.argv[1:])
+    # print(sys.argv[1:])
     c = Controller.getInstance()
     c.runProgram(sys.argv[1:])
