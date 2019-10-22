@@ -87,6 +87,7 @@ class Controller(object):
         for opt, arg in opts:
             if opt == '-h':  # help
                 print(self.usage)
+                sys.exit(0)
             elif opt == '-s':  # maze size
                 if int(arg) not in self.sizes:
                     print("Requested size not valid.")
