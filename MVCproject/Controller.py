@@ -1,10 +1,11 @@
 import sys
 import getopt
 from Maze import Maze
+
 from Counter import Counter
 from Timer import Timer
 from TimerTotal import TimerTotal
-# from Solve import Solve
+from FileHandler import FileHandler
 from Calculator import Calculator
 from Interfaces import ISolveAlgorithm
 from DepthFirst import DepthFirst
@@ -65,7 +66,9 @@ class Controller(object):
 
                 # if output file is given, write file with mazes.
                 if self.outputfile is not None:
-                    pass  # todo FileFacade.write(self.mazes)
+                    print("Writing mazes to file...")
+                    fileHandler = FileHandler()
+                    fileHandler.fileInput(self.mazes)
 
                 # solve using selected algorithm.
                 # todo view.showResults(self.solveMazes())

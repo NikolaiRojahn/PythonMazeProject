@@ -1,5 +1,5 @@
 from random import shuffle
-from File import FileHandler
+
 
 import sys
 # needed for DFS...
