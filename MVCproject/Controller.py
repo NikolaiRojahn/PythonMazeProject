@@ -92,9 +92,6 @@ class Controller(object):
                 print("{}".format(i), str(
                     timerTotal.getAverageTimeForMazeSolutionTimes()), str(timerTotal))
 
-            print("Mazes are solved.", len(
-                self.timerTotals), len(self.counters))
-
         else:
             sys.exit()
 
@@ -140,8 +137,6 @@ class Controller(object):
 
     # helper method that solves mazes with selected algorithm and returns a tuple with lists of total time and steps.
     def solveMazes(self):
-        # test
-        print("mazes:" + str(len(self.mazes)))
 
         # set up instance of solving algorithm.
         if self.solveAlgorithm == "dfs":
@@ -151,20 +146,18 @@ class Controller(object):
 
         # loop through outer maze container collection.
         for i, mazeList in enumerate(self.mazes):
-            # print("i er: " + str(i))
+
             # get corresponding TimerTotal and Counter objects.
             timerTotal = self.timerTotals[i]
-            print("{} timertotal er: ".format(i),
-                  timerTotal.calculateSumTimeForMazeSolutionTimes(), str(timerTotal))
+
             counter = self.counters[i]
             # loop through actual mazes and time the solution.
             for maze in mazeList:
                 timer = Timer()
-                # print("timer @ " + str(timer))
                 timer.StartTimer()
                 sa.solve(maze, counter)
                 timer.EndTimer()
-                # print("solved in " + str(timer.GetTimer()))
+
                 timerTotal.addTimeToMazeSolutionTimesList(timer.GetTimer())
 
         # accCounter: Counter = Counter()

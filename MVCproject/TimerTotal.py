@@ -1,7 +1,10 @@
 class TimerTotal:
-
+    # ARGH the following line makes MazeSolutionTimes static,
+    # since a value is assigned in class declaration.
     # MazeSolutionTimes = []
-    MazeSolutionTimes = list()
+
+    def __init__(self):
+        self.MazeSolutionTimes = []
 
     def addTimeToMazeSolutionTimesList(self, time):
         self.MazeSolutionTimes.append(time)
