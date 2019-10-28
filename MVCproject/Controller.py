@@ -86,8 +86,11 @@ class Controller(object):
                     writer.createWriter(self.mazes, self.outputfile)
 
             # solve using selected algorithm.
-            # todo view.showResults(self.solveMazes())
-            print(self.solveMazes())
+            self.solveMazes()
+            # todo call view with needed info
+
+            print("Mazes are solved.", len(
+                self.timerTotals), len(self.counters))
 
         else:
             sys.exit()
@@ -133,55 +136,50 @@ class Controller(object):
         return True
 
     # helper method that solves mazes with selected algorithm and returns a tuple with lists of total time and steps.
-    def solveMazes(self) -> (list, list):
-        accCounter: Counter = Counter()
-        timer: Timer = Timer()
-        accTimer: TimerTotal = TimerTotal()
+    def solveMazes(self):
+        # test
+        print("mazes:" + str(len(self.mazes)))
 
+        # set up instance of solving algorithm.
         if self.solveAlgorithm == "dfs":
             sa: ISolveAlgorithm = DepthFirst()
-
         else:
             raise NotImplementedError
 
-        timer.StartTimer()
-        for maze in self.mazes:
-            sa.solve(maze, accCounter)
-        timer.EndTimer()
+        # loop through outer maze container collection.
+        for i, mazeList in enumerate(self.mazes):
 
-        accTimer.setTotalTimer(timer.GetTimer())
+            # get corresponding TimerTotal and Counter objects.
+            timerTotal = self.timerTotals[i]
+            counter = self.counters[i]
+            # loop through actual mazes and time the solution.
+            for maze in mazeList:
+                timer = Timer()
+                timer.StartTimer()
+                sa.solve(maze, counter)
+                timer.EndTimer()
+                timerTotal.addTimeToMazeSolutionTimesList(timer.GetTimer())
 
-        return (accTimer, accCounter)
+        # accCounter: Counter = Counter()
+        # timer: Timer = Timer()
+        # accTimer: TimerTotal = TimerTotal()
 
-        # check if arguments[0] is in sizes
-        # check if arguments[1] is in genAlgorithms
-        # check if arguments[2] is in solveAlgorithms
-        # return int(arguments[0]) in sizes and arguments[1] in genAlgorithms and arguments[2] in solveAlgorithms
+        # if self.solveAlgorithm == "dfs":
+        #     sa: ISolveAlgorithm = DepthFirst()
 
-        # sizes = [5, 10, 15, 20, 25, 30]
-        # runLoop = 2
+        # else:
+        #     raise NotImplementedError
+
+        # timer.StartTimer()
+        # for maze in self.mazes:
+        #     sa.solve(maze, accCounter)
+        # timer.EndTimer()
+
+        # accTimer.setTotalTimer(timer.GetTimer())
+
+        # return (accTimer, accCounter)
 
 
-        # for size in sizes:
-        #     print(15 * "*" + str(size) + 15*"*")
-        #     timerTotal = TimerTotal()
-        #     i = 0
-        #     while i < runLoop:
-        #         maze = Maze(size)
-        #         timer = Timer()
-        #         counter = Counter()
-        #         solve = Solve(maze, counter)
-        #         print(maze.pretty_print())
-        #         timer.StartTimer()
-        #         # pass in True as last argument to see print outs from search(...)
-        #         solve.search(1, 1)
-        #         print(counter.GetNumberOfPointsVisitedWithText())
-        #         timer.EndTimer()
-        #         print(timer.GetTimerWithText())
-        #         timerTotal.setTotalTimer(timer.GetTimer())
-        #         i += 1
-        #     calculator = Calculator(timerTotal.GetTimer(), runLoop)
-        #     print(calculator.GetTimerAverage())
 if __name__ == '__main__':
     # print(sys.argv[1:])
     c = Controller.getInstance()
