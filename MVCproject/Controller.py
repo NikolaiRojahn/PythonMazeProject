@@ -1,7 +1,6 @@
 import sys
 import getopt
 from Maze import Maze
-
 from Counter import Counter
 from Timer import Timer
 from TimerTotal import TimerTotal
@@ -13,12 +12,12 @@ from DepthFirst import DepthFirst
 
 class Controller(object):
     mazes = list()
-    sizes = [5, 10, 15, 20, 25, 30]
+    sizes = list()
     solveAlgorithms = ["dfs"]
-    usage = 'Controller.py -s <size> [-i <inputfile> -o <outputfile> --alg-solve=<name>]'
+    usage = 'Controller.py -s size1,size2,...,sizeN [-i <inputfile> -o <outputfile> --alg-solve=<name>]'
     inputfile = None
     outputfile = None
-    size = None
+    # size = None
     solveAlgorithm = None
     generatedMazes = None
     __instance = None
@@ -70,9 +69,10 @@ class Controller(object):
                     fileHandler = FileHandler()
                     fileHandler.fileInput(self.mazes)
 
-                # solve using selected algorithm.
-                # todo view.showResults(self.solveMazes())
-                print(self.solveMazes())
+            # solve using selected algorithm.
+            # todo view.showResults(self.solveMazes())
+            print(self.solveMazes())
+
         else:
             sys.exit()
 
@@ -91,12 +91,19 @@ class Controller(object):
             if opt == '-h':  # help
                 print(self.usage)
                 sys.exit(0)
-            elif opt == '-s':  # maze size
-                if int(arg) not in self.sizes:
-                    print("Requested size not valid.")
+            elif opt == '-s':  # maze sizes
+                # try to split arg into array.
+                argArray = arg.split(',')
+                # convert to ints and append to sizes.
+                for s in argArray:
+                    self.sizes.append(int(s))
+                # if int(arg) not in self.sizes:
+                #   print("Requested size not valid.")
+                if len(self.sizes) <= 0:
+                    print("Requested sizes are not valid.")
                     return False
-                else:
-                    self.size = int(arg)
+                # else:
+                #     self.size = int(arg)
             elif opt == '-i':  # input file
                 self.inputfile = arg
             elif opt == '-o':  # output file
