@@ -1,6 +1,7 @@
 class TimerTotal:
 
-    MazeSolutionTimes = []
+    # MazeSolutionTimes = []
+    MazeSolutionTimes = list()
 
     def addTimeToMazeSolutionTimesList(self, time):
         self.MazeSolutionTimes.append(time)

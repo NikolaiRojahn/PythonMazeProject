@@ -88,8 +88,9 @@ class Controller(object):
             # solve using selected algorithm.
             self.solveMazes()
             # todo call view with needed info
-            for timerTotal in self.timerTotals:
-                print(str(timerTotal.getAverageTimeForMazeSolutionTimes()))
+            for i, timerTotal in enumerate(self.timerTotals):
+                print("{}".format(i), str(
+                    timerTotal.getAverageTimeForMazeSolutionTimes()), str(timerTotal))
 
             print("Mazes are solved.", len(
                 self.timerTotals), len(self.counters))
@@ -152,7 +153,9 @@ class Controller(object):
         for i, mazeList in enumerate(self.mazes):
             # print("i er: " + str(i))
             # get corresponding TimerTotal and Counter objects.
-            timerTotal = self.timerTotals.__getitem__(i)
+            timerTotal = self.timerTotals[i]
+            print("{} timertotal er: ".format(i),
+                  timerTotal.calculateSumTimeForMazeSolutionTimes(), str(timerTotal))
             counter = self.counters[i]
             # loop through actual mazes and time the solution.
             for maze in mazeList:
