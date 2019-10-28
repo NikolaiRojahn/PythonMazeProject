@@ -2,6 +2,7 @@ import sys
 import getopt
 from Maze import Maze
 from Counter import Counter
+from CounterTotal import CounterTotal
 from Timer import Timer
 from TimerTotal import TimerTotal
 from csvFileWriter import csvFileWriter
@@ -12,15 +13,15 @@ from FileFacade import FileFacade
 
 
 class Controller(object):
-    mazes = list()
-    sizes = list()
-    timerTotals = list()
-    counters = list()
+    # static variables.
+    mazes: list = list()
+    sizes: list = list()
+    timerTotals: list = list()
+    counterTotals: list = list()
     solveAlgorithms = ["dfs"]
     usage = 'Controller.py -s size1,size2,...,sizeN --alg-solve=<name> [-i <inputfile> -o <outputfile>]'
     inputfile = None
     outputfile = None
-    # size = None
     solveAlgorithm = None
     generatedMazes = None
     __instance = None
@@ -35,6 +36,7 @@ class Controller(object):
     # constructor - composition of model, view (dependency injection)
     # def __init__(self, model, view):
     def __init__(self):
+        pass
         # self.model = model
         # self.view = view
 
@@ -62,12 +64,12 @@ class Controller(object):
                 # clear relevant arrays if previously filled.
                 self.mazes.clear()
                 self.timerTotals.clear()
-                self.counters.clear()
+                self.counterTotals.clear()
 
                 for s in self.sizes:
                     # create counter and timertotal for current maze size.
                     self.timerTotals.append(TimerTotal())
-                    self.counters.append(Counter())
+                    self.counterTotals.append(CounterTotal())
 
                     # create 10 mazes of each given size, store in array.
                     mazeSubList = list()
@@ -91,6 +93,10 @@ class Controller(object):
             for i, timerTotal in enumerate(self.timerTotals):
                 print("{}".format(i), str(
                     timerTotal.getAverageTimeForMazeSolutionTimes()), str(timerTotal))
+
+            for i, counterTotal in enumerate(self.counterTotals):
+                print("{}".format(i), str(
+                    counterTotal.getAverageCounterForMazeSolutionCounters()), str(counterTotal))
 
         else:
             sys.exit()
@@ -150,7 +156,8 @@ class Controller(object):
             # get corresponding TimerTotal and Counter objects.
             timerTotal = self.timerTotals[i]
 
-            counter = self.counters[i]
+            counterTotal = self.counterTotals[i]
+            counter = Counter()
             # loop through actual mazes and time the solution.
             for maze in mazeList:
                 timer = Timer()
@@ -159,6 +166,7 @@ class Controller(object):
                 timer.EndTimer()
 
                 timerTotal.addTimeToMazeSolutionTimesList(timer.GetTimer())
+                counterTotal.addCounterToMazeSolutionCountersList(counter)
 
         # accCounter: Counter = Counter()
         # timer: Timer = Timer()

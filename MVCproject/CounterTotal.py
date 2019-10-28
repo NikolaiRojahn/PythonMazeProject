@@ -18,5 +18,5 @@ class CounterTotal:
     def calculateSumCounterForMazeSolutionCounters(self):
         sum = 0
         for i in range(len(self.MazeSolutionCounters)):
-            sum += self.MazeSolutionCounters[i]
+            sum += self.MazeSolutionCounters[i].GetNumberOfPointsVisited()
         return sum
