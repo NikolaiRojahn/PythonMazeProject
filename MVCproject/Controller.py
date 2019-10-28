@@ -98,6 +98,8 @@ class Controller(object):
                 print("{}".format(i), str(
                     counterTotal.getAverageCounterForMazeSolutionCounters()), str(counterTotal))
 
+            self.plottingValues()
+
         else:
             sys.exit()
 
@@ -168,24 +170,21 @@ class Controller(object):
                 timerTotal.addTimeToMazeSolutionTimesList(timer.GetTimer())
                 counterTotal.addCounterToMazeSolutionCountersList(counter)
 
-        # accCounter: Counter = Counter()
-        # timer: Timer = Timer()
-        # accTimer: TimerTotal = TimerTotal()
+    def plottingValues(self):
+        minTime = []
+        maxTime = []
+        avgTime = []
 
-        # if self.solveAlgorithm == "dfs":
-        #     sa: ISolveAlgorithm = DepthFirst()
+        for i, j in enumerate(self.sizes):
+            timerTotal = self.timerTotals[i]
+            minTime.append(timerTotal.getMinimumTimeForMazeSolutionTimes())
+            maxTime.append(timerTotal.getMaximumTimeForMazeSolutionTimes())
+            avgTime.append(timerTotal.getAverageTimeForMazeSolutionTimes())
 
-        # else:
-        #     raise NotImplementedError
-
-        # timer.StartTimer()
-        # for maze in self.mazes:
-        #     sa.solve(maze, accCounter)
-        # timer.EndTimer()
-
-        # accTimer.setTotalTimer(timer.GetTimer())
-
-        # return (accTimer, accCounter)
+        print("mazesize = " + str(self.sizes))
+        print("minTime = " + str(minTime))
+        print("maxTime = " + str(maxTime))
+        print("avgTime = " + str(avgTime))
 
 
 if __name__ == '__main__':

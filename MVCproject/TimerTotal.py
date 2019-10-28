@@ -10,10 +10,12 @@ class TimerTotal:
         self.MazeSolutionTimes.append(time)
 
     def getMinimumTimeForMazeSolutionTimes(self):
-        return self.MazeSolutionTimes.sort()[0]
+        self.MazeSolutionTimes.sort()
+        return self.MazeSolutionTimes[0]
 
     def getMaximumTimeForMazeSolutionTimes(self):
-        return self.MazeSolutionTimes.sort()[len(self.MazeSolutionTimes - 1)]
+        self.MazeSolutionTimes.sort()
+        return self.MazeSolutionTimes[len(self.MazeSolutionTimes) - 1]
 
     def getAverageTimeForMazeSolutionTimes(self):
         return self.calculateSumTimeForMazeSolutionTimes() / len(self.MazeSolutionTimes)
