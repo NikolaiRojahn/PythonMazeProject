@@ -13,8 +13,10 @@ from DepthFirst import DepthFirst
 class Controller(object):
     mazes = list()
     sizes = list()
+    timerTotals = list()
+    counters = list()
     solveAlgorithms = ["dfs"]
-    usage = 'Controller.py -s size1,size2,...,sizeN [-i <inputfile> -o <outputfile> --alg-solve=<name>]'
+    usage = 'Controller.py -s size1,size2,...,sizeN --alg-solve=<name> [-i <inputfile> -o <outputfile>]'
     inputfile = None
     outputfile = None
     # size = None
@@ -56,12 +58,25 @@ class Controller(object):
                 # todo view.showResults(self.solveMazes())
 
             else:
-                # clear array of mazes if previously filled.
+                # clear relevant arrays if previously filled.
                 self.mazes.clear()
+                self.timerTotals.clear()
+                self.counters.clear()
 
-                # create 10 mazes of given size, store in array.
-                for x in range(10):
-                    self.mazes.insert(x, Maze(self.size))
+                for s in self.sizes:
+                    # create counter and timertotal for current maze size.
+                    self.timerTotals.append(TimerTotal())
+                    self.counters.append(Counter())
+
+                    # create 10 mazes of each given size, store in array.
+                    mazeSubList = list()
+
+                    # create 10 mazes of current size.
+                    for x in range(10):
+                        mazeSubList.insert(x, Maze(s))
+
+                    # store sublist in mazes.
+                    self.mazes.append(mazeSubList)
 
                 # if output file is given, write file with mazes.
                 if self.outputfile is not None:
@@ -116,8 +131,8 @@ class Controller(object):
 
         return True
 
-    # helper method that solves mazes with selected algorithm and returns a tuple with total time and steps.
-    def solveMazes(self) -> (TimerTotal, Counter):
+    # helper method that solves mazes with selected algorithm and returns a tuple with lists of total time and steps.
+    def solveMazes(self) -> (list, list):
         accCounter: Counter = Counter()
         timer: Timer = Timer()
         accTimer: TimerTotal = TimerTotal()
@@ -144,6 +159,7 @@ class Controller(object):
 
         # sizes = [5, 10, 15, 20, 25, 30]
         # runLoop = 2
+
 
         # for size in sizes:
         #     print(15 * "*" + str(size) + 15*"*")
