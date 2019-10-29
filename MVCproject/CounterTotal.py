@@ -7,10 +7,12 @@ class CounterTotal:
         self.MazeSolutionCounters.append(counter)
 
     def getMinimumCounterForMazeSolutionCounters(self):
-        return self.MazeSolutionCounters.sort()[0]
+        self.MazeSolutionCounters.sort()
+        return self.MazeSolutionCounters[0]
 
     def getMaximumCounterForMazeSolutionCounters(self):
-        return self.MazeSolutionCounters.sort()[len(self.MazeSolutionCounters - 1)]
+        self.MazeSolutionCounters.sort()
+        return self.MazeSolutionCounters[len(self.MazeSolutionCounters) - 1]
 
     def getAverageCounterForMazeSolutionCounters(self):
         return self.calculateSumCounterForMazeSolutionCounters() / len(self.MazeSolutionCounters)
@@ -18,5 +20,5 @@ class CounterTotal:
     def calculateSumCounterForMazeSolutionCounters(self):
         sum = 0
         for i in range(len(self.MazeSolutionCounters)):
-            sum += self.MazeSolutionCounters[i].GetNumberOfPointsVisited()
+            sum += self.MazeSolutionCounters[i]
         return sum

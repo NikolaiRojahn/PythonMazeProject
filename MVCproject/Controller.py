@@ -10,6 +10,7 @@ from Calculator import Calculator
 from Interfaces import ISolveAlgorithm
 from DepthFirst import DepthFirst
 from FileFacade import FileFacade
+from Plotting import Plotting
 
 
 class Controller(object):
@@ -98,8 +99,15 @@ class Controller(object):
                 print("{}".format(i), str(
                     counterTotal.getAverageCounterForMazeSolutionCounters()), str(counterTotal))
 
-            self.plottingValues()
+            timeTuple = self.plottingTimeValues()
+            iterationsTuple = self.plottingIterationValues()
 
+            # mazesize, timeMin, timeMax, timeAvg, iterationsMin, iterationsMax, iterationsAvg
+            plotting = Plotting(self.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
+                                iterationsTuple[0], iterationsTuple[2], iterationsTuple[1])
+
+            plotting.plottingTime()
+            plotting.plottingIterations()
         else:
             sys.exit()
 
@@ -168,23 +176,37 @@ class Controller(object):
                 timer.EndTimer()
 
                 timerTotal.addTimeToMazeSolutionTimesList(timer.GetTimer())
-                counterTotal.addCounterToMazeSolutionCountersList(counter)
+                counterTotal.addCounterToMazeSolutionCountersList(
+                    counter.GetNumberOfPointsVisited())
 
-    def plottingValues(self):
+    def plottingTimeValues(self) -> (list, list, list):
         minTime = []
-        maxTime = []
         avgTime = []
+        maxTime = []
 
         for i, j in enumerate(self.sizes):
             timerTotal = self.timerTotals[i]
             minTime.append(timerTotal.getMinimumTimeForMazeSolutionTimes())
-            maxTime.append(timerTotal.getMaximumTimeForMazeSolutionTimes())
             avgTime.append(timerTotal.getAverageTimeForMazeSolutionTimes())
+            maxTime.append(timerTotal.getMaximumTimeForMazeSolutionTimes())
 
-        print("mazesize = " + str(self.sizes))
-        print("minTime = " + str(minTime))
-        print("maxTime = " + str(maxTime))
-        print("avgTime = " + str(avgTime))
+        return (minTime, avgTime, maxTime)
+
+    def plottingIterationValues(self) -> (list, list, list):
+        minIterations = []
+        avgIterations = []
+        maxIterations = []
+
+        for i, j in enumerate(self.sizes):
+            counterTotal = self.counterTotals[i]
+            minIterations.append(
+                counterTotal.getMinimumCounterForMazeSolutionCounters())
+            avgIterations.append(
+                counterTotal.getAverageCounterForMazeSolutionCounters())
+            maxIterations.append(
+                counterTotal.getMaximumCounterForMazeSolutionCounters())
+
+        return (minIterations, avgIterations, maxIterations)
 
 
 if __name__ == '__main__':
