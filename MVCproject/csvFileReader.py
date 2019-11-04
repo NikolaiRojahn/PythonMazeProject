@@ -4,11 +4,13 @@ from Maze import Maze
 
 class csvFileReader:
 
+    def __init__(self):
+        self.numberOfSizes = 0
+
     def read(self, fileName):
         #filename = "test2.csv"
         seperator = ['#']
         seperatorNewSize = ['EndOfMazeSize']
-
         mazesAllSizes = []
         mazesSingleSize = []
 
@@ -21,13 +23,15 @@ class csvFileReader:
                     mazesSingleSize.append(objMaze)
                     maze.clear()
                 elif(row == seperatorNewSize):
+                    self.numberOfSizes += 1
                     mazesAllSizes.append(mazesSingleSize.copy())
                     mazesSingleSize.clear()
                 else:
                     for i in range(0, len(row)):
                         row[i] = int(row[i])
                     maze.append(row)
-
+            print("MAZE FROM READER!!!!!!!!!!!!!!!!!!")
+            print(mazesAllSizes[0][0].convertedMaze)
         return mazesAllSizes
 #        mazes = []
 #        with open(fileName) as f:

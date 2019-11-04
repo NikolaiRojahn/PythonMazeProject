@@ -6,6 +6,7 @@ from CounterTotal import CounterTotal
 from Timer import Timer
 from TimerTotal import TimerTotal
 from csvFileWriter import csvFileWriter
+from csvFileReader import csvFileReader
 from Calculator import Calculator
 from Interfaces import ISolveAlgorithm
 from DepthFirst import DepthFirst
@@ -54,8 +55,17 @@ class Controller(object):
 
             # if input file is given
             if self.inputfile is not None:
+                csvReader = csvFileReader()
                 # read in file
                 print("Reading mazes from {}.".format(self.inputfile))
+                self.mazes = csvReader.read(self.inputfile)
+                #for mazeList in self.mazes:
+                #    for maze in mazeList:
+                #        print(maze.pretty_print())
+
+                for size in range(csvReader.numberOfSizes):
+                    self.timerTotals.append(TimerTotal())
+                    self.counterTotals.append(CounterTotal())
                 # todo self.mazes = FileFacade.read(self.inputfile)
 
                 # solve using selected algorithm.
@@ -207,7 +217,6 @@ class Controller(object):
                 counterTotal.getMaximumCounterForMazeSolutionCounters())
 
         return (minIterations, avgIterations, maxIterations)
-
 
 if __name__ == '__main__':
     # print(sys.argv[1:])

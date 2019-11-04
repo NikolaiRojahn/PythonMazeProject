@@ -7,7 +7,7 @@ class csvFileWriter:
 
     def write(self, mazeArray, fileName):
         #print("fileInput called.", platform.os.getcwd())
-        file_obj = open(fileName, "a+")
+        file_obj = open(fileName, "w", newline='')
         output_writer = csv.writer(file_obj)
         for sizeOfMaze in list(mazeArray):
             for maze in list(sizeOfMaze):
