@@ -1,8 +1,9 @@
 import csv
 from Maze import Maze
 
+
 class csvFileReader:
-    
+
     def read(self, fileName):
         #filename = "test2.csv"
         seperator = ['#']
@@ -26,6 +27,8 @@ class csvFileReader:
                     for i in range(0, len(row)):
                         row[i] = int(row[i])
                     maze.append(row)
+
+        return mazesAllSizes
 #        mazes = []
 #        with open(fileName) as f:
 #            reader = csv.reader(f, delimiter=',')
