@@ -12,6 +12,8 @@ from DepthFirst import DepthFirst
 from FileFacade import FileFacade
 from Plotting import Plotting
 
+from Model import Model
+
 
 class Controller(object):
     # static variables.
@@ -27,6 +29,7 @@ class Controller(object):
     generatedMazes = None
     __instance = None
 
+    @staticmethod
     def getInstance():
         # is instance reference None, call constructor.
         if Controller.__instance is None:
@@ -48,6 +51,29 @@ class Controller(object):
             Controller.__instance = self
 
     def runProgram(self, arguments):
+        # Pseudo code:
+        # 1. check arguments
+        # 2. set values on model facade
+        # 3. read from file
+        # 4. generate mazes
+        # 5. solve mazes
+        # 6. write mazes to file
+        # 7. show graphs of solving mazes.
+
+        # get instance of model.
+        model = Model.getInstance()
+        # get result of setting up model, either True or String
+        result = model.setup(arguments)
+        if(result is True):
+            pass
+            # 3. read from file
+            # 4. generate mazes
+            # 5. solve mazes
+            # 6. write mazes to file
+            # 7. show graphs of solving mazes.
+        else:
+            print(result)
+            exit(1)
 
         # run only if arguments are valid
         if self.checkArguments(arguments):
