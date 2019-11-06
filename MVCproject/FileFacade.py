@@ -8,12 +8,8 @@ class FileFacade:
         self.numberOfSizes = 0
 
     def read(self, file):
-        extension = self.__checkFileType(file)
-
-        if (extension == 'csv'):
-            mazesAllSize = csvFileReader.read(self, file)
-            csvFileReader.numberOfSizes = self.numberOfSizes
-            return mazesAllSize
+        result = self.__createReader(file)
+        return result
 
     def write(self, mazes, file):
         self.__createWriter(mazes, file)
@@ -25,6 +21,14 @@ class FileFacade:
             csvFileWriter.write(self, mazes, file)
         else:
             raise Exception("File format doesn't exist")
+
+    def __createReader(self, file):
+        extension = self.__checkFileType(file)
+
+        if (extension == 'csv'):
+            mazesAllSize = csvFileReader.read(self, file)
+            csvFileReader.numberOfSizes = self.numberOfSizes
+            return mazesAllSize
 
     def __checkFileType(self, file):
         fileExtension = ""
