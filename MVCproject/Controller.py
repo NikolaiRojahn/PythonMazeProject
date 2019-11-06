@@ -59,17 +59,6 @@ class Controller(object):
                 # read in file
                 print("Reading mazes from {}.".format(self.inputfile))
                 self.mazes = self.fileHandler.read(self.inputfile)
-                #for mazeList in self.mazes:
-                #    for maze in mazeList:
-                #        print(maze.pretty_print())
-
-                for n in range(self.fileHandler.numberOfSizes):
-                    self.timerTotals.append(TimerTotal())
-                    self.counterTotals.append(CounterTotal())
-                # todo self.mazes = FileFacade.read(self.inputfile)
-
-                # solve using selected algorithm.
-                # todo view.showResults(self.solveMazes())
 
             else:
                 # clear relevant arrays if previously filled.
@@ -172,6 +161,10 @@ class Controller(object):
 
         # loop through outer maze container collection.
         for i, mazeList in enumerate(self.mazes):
+
+            #creates empty TimerTotal objcets and store them in the TimerTotal array
+            self.timerTotals.append(TimerTotal())
+            self.counterTotals.append(CounterTotal())
 
             # get corresponding TimerTotal and Counter objects.
             timerTotal = self.timerTotals[i]
