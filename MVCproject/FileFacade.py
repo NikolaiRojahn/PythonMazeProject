@@ -3,8 +3,22 @@ from csvFileWriter import csvFileWriter
 from csvFileReader import csvFileReader
 
 class FileFacade:
-    
-    def createWriter(self, mazes, file):
+
+    def __init__(self):
+        self.numberOfSizes = 0
+
+    def read(self, file):
+        extension = self.__checkFileType(file)
+
+        if (extension == 'csv'):
+            mazesAllSize = csvFileReader.read(self, file)
+            csvFileReader.numberOfSizes = self.numberOfSizes
+            return mazesAllSize
+
+    def write(self, mazes, file):
+        self.__createWriter(mazes, file)
+
+    def __createWriter(self, mazes, file):
         extension = self.__checkFileType(file)
         
         if (extension == 'csv'):

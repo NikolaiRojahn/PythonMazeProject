@@ -27,6 +27,7 @@ class Controller(object):
     solveAlgorithm = None
     generatedMazes = None
     __instance = None
+    fileHandler = FileFacade()
 
     def getInstance():
         # is instance reference None, call constructor.
@@ -55,15 +56,14 @@ class Controller(object):
 
             # if input file is given
             if self.inputfile is not None:
-                csvReader = csvFileReader()
                 # read in file
                 print("Reading mazes from {}.".format(self.inputfile))
-                self.mazes = csvReader.read(self.inputfile)
+                self.mazes = self.fileHandler.read(self.inputfile)
                 #for mazeList in self.mazes:
                 #    for maze in mazeList:
                 #        print(maze.pretty_print())
 
-                for size in range(csvReader.numberOfSizes):
+                for n in range(self.fileHandler.numberOfSizes):
                     self.timerTotals.append(TimerTotal())
                     self.counterTotals.append(CounterTotal())
                 # todo self.mazes = FileFacade.read(self.inputfile)
@@ -95,8 +95,8 @@ class Controller(object):
                 # if output file is given, write file with mazes.
                 if self.outputfile is not None:
                     print("Writing mazes to file...")
-                    writer = FileFacade()
-                    writer.createWriter(self.mazes, self.outputfile)
+                    #writer = FileFacade()
+                    self.fileHandler.write(self.mazes, self.outputfile)
 
             # solve using selected algorithm.
             self.solveMazes()
