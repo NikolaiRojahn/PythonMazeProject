@@ -24,7 +24,7 @@ class Maze:
     def create(self):
         self.maze = self.DFG(self.make_empty_maze())
         self.convertedMaze = self.convert(self.maze)
-        self.gridMaze = self.ConvertedStrMazeToGridOfInt(self.convertedMaze)
+        #self.gridMaze = self.ConvertedStrMazeToGridOfInt(self.convertedMaze)
 
     def DFG(self, maze, coords=(0, 0)):
         directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
