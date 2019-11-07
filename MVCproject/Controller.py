@@ -66,7 +66,7 @@ class Controller(object):
                 # if output file is given, write file with mazes.
                 if self.outputfile is not None:
                     print("Writing mazes to file...")
-                    self.fileHandler.write(self.mazes, self.outputfile)
+                    self.fileHandler.write(self.mazes, self.outputfile, self.sizes)
 
             # solve using selected algorithm.
             self.solveMazes()
@@ -103,6 +103,13 @@ class Controller(object):
 
         timeTuple = self.plottingTimeValues()
         iterationsTuple = self.plottingIterationValues()
+
+        print(timeTuple[0])
+        print(timeTuple[1])
+        print(timeTuple[2])
+        print(iterationsTuple[0])
+        print(iterationsTuple[1])
+        print(iterationsTuple[2])
 
         # mazesize, timeMin, timeMax, timeAvg, iterationsMin, iterationsMax, iterationsAvg
         plotting = Plotting(self.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
@@ -187,12 +194,15 @@ class Controller(object):
         avgTime = []
         maxTime = []
 
+        print("START")
+        print(self.sizes)
         for i, j in enumerate(self.sizes):
             timerTotal = self.timerTotals[i]
             minTime.append(timerTotal.getMinimumTimeForMazeSolutionTimes())
             avgTime.append(timerTotal.getAverageTimeForMazeSolutionTimes())
             maxTime.append(timerTotal.getMaximumTimeForMazeSolutionTimes())
 
+        print("END")
         return (minTime, avgTime, maxTime)
 
     def plottingIterationValues(self) -> (list, list, list):

@@ -30,7 +30,7 @@ class Plotting:
         iterations.plot(x, self.iterationsMax, color='green', label='Maximum Iterations')
         iterations.plot(x, self.iterationsAvg, color='orange', label='Average Iterations')
         iterations.set_title("Maze solution iterations")
-        plt.sca(size)
+        plt.sca(iterations)
         plt.xticks(range(len(self.mazesize)), self.mazesize)
         iterations.set_xlabel("Maze size")
         iterations.set_ylabel("Iterations")

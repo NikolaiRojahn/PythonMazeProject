@@ -8,14 +8,14 @@ class FileFacade:
         result = self.__createReader(file)
         return result
 
-    def write(self, mazes, file):
-        self.__createWriter(mazes, file)
+    def write(self, mazes, file, sizes):
+        self.__createWriter(mazes, file, sizes)
 
-    def __createWriter(self, mazes, file):
+    def __createWriter(self, mazes, file, sizes):
         extension = self.__checkFileType(file)
         
         if (extension == 'csv'):
-            csvFileWriter.write(self, mazes, file)
+            csvFileWriter.write(self, mazes, file, sizes)
         else:
             raise Exception("File format doesn't exist")
 
