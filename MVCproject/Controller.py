@@ -94,23 +94,15 @@ class Controller(object):
             self.mazes.append(mazeSubList)
 
     def handlePlotting(self):
-        for i, timerTotal in enumerate(self.timerTotals):
-            print("{}".format(i), str(
-                timerTotal.getAverageTimeForMazeSolutionTimes()), str(timerTotal))
+        #for i, timerTotal in enumerate(self.timerTotals):
+        #    print("{}".format(i), str(
+        #        timerTotal.getAverageTimeForMazeSolutionTimes()), str(timerTotal))
 
-        for i, counterTotal in enumerate(self.counterTotals):
-            print("{}".format(i), str(
-                counterTotal.getAverageCounterForMazeSolutionCounters()), str(counterTotal))
-
+        #for i, counterTotal in enumerate(self.counterTotals):
+        #    print("{}".format(i), str(
+        #        counterTotal.getAverageCounterForMazeSolutionCounters()), str(counterTotal))
         timeTuple = self.plottingTimeValues()
         iterationsTuple = self.plottingIterationValues()
-
-        print(timeTuple[0])
-        print(timeTuple[1])
-        print(timeTuple[2])
-        print(iterationsTuple[0])
-        print(iterationsTuple[1])
-        print(iterationsTuple[2])
 
         # mazesize, timeMin, timeMax, timeAvg, iterationsMin, iterationsMax, iterationsAvg
         plotting = Plotting(self.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
@@ -160,7 +152,6 @@ class Controller(object):
 
     # helper method that solves mazes with selected algorithm and returns a tuple with lists of total time and steps.
     def solveMazes(self):
-
         # set up instance of solving algorithm.
         if self.solveAlgorithm == "dfs":
             sa: ISolveAlgorithm = DepthFirst()
@@ -169,7 +160,6 @@ class Controller(object):
 
         # loop through outer maze container collection.
         for i, mazeList in enumerate(self.mazes):
-
             #creates empty TimerTotal objcets and store them in the TimerTotal array
             self.timerTotals.append(TimerTotal())
             self.counterTotals.append(CounterTotal())
@@ -195,15 +185,12 @@ class Controller(object):
         avgTime = []
         maxTime = []
 
-        print("START")
-        print(self.sizes)
         for i, j in enumerate(self.sizes):
             timerTotal = self.timerTotals[i]
             minTime.append(timerTotal.getMinimumTimeForMazeSolutionTimes())
             avgTime.append(timerTotal.getAverageTimeForMazeSolutionTimes())
             maxTime.append(timerTotal.getMaximumTimeForMazeSolutionTimes())
 
-        print("END")
         return (minTime, avgTime, maxTime)
 
     def plottingIterationValues(self) -> (list, list, list):

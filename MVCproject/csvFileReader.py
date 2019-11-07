@@ -4,16 +4,13 @@ from Maze import Maze
 
 class csvFileReader:
 
-    sizes: list = list()   
+    sizes: list = None  
 
-    def setSizes(self, mazesizes):
-        self.sizes = mazesizes     
-
-    def getSizes(self):
-        return self.sizes
+    @staticmethod
+    def getSizes():
+        return csvFileReader.sizes
 
     def read(self, fileName):
-        #filename = "test2.csv"
         seperator = ['#']
         seperatorNewSize = ['EndOfMazeSize']
         mazesAllSizes = []
@@ -23,43 +20,20 @@ class csvFileReader:
             reader = csv.reader(f, delimiter=',')
             maze = []
             for row in reader:
-                if(row == seperator):
-                    objMaze = Maze(None, maze.copy())
-                    mazesSingleSize.append(objMaze)
-                    maze.clear()
-                elif(row == seperatorNewSize):
-                    mazesAllSizes.append(mazesSingleSize.copy())
-                    mazesSingleSize.clear()
+                if(csvFileReader.sizes is not None):
+                    if(row == seperator):
+                        objMaze = Maze(None, maze.copy())
+                        mazesSingleSize.append(objMaze)
+                        maze.clear()
+                    elif(row == seperatorNewSize):
+                        mazesAllSizes.append(mazesSingleSize.copy())
+                        mazesSingleSize.clear()
+                    else:
+                        for i in range(0, len(row)):
+                            row[i] = int(row[i])
+                        maze.append(row)
                 else:
-                    for i in range(0, len(row)):
-                        row[i] = int(row[i])
-                    maze.append(row)
+                    csvFileReader.sizes = row
             print("MAZE FROM READER!!!!!!!!!!!!!!!!!!")
             print(mazesAllSizes[0][0].convertedMaze)
         return mazesAllSizes
-    
-    """ def read(self, fileName):
-        #filename = "test2.csv"
-        seperator = ['#']
-        seperatorNewSize = ['EndOfMazeSize']
-        mazesAllSizes = []
-        mazesSingleSize = []
-
-        with open(fileName) as f:
-            reader = csv.reader(f, delimiter=',')
-            maze = []
-            for row in reader:
-                if(row == seperator):
-                    objMaze = Maze(None, maze.copy())
-                    mazesSingleSize.append(objMaze)
-                    maze.clear()
-                elif(row == seperatorNewSize):
-                    mazesAllSizes.append(mazesSingleSize.copy())
-                    mazesSingleSize.clear()
-                else:
-                    for i in range(0, len(row)):
-                        row[i] = int(row[i])
-                    maze.append(row)
-            print("MAZE FROM READER!!!!!!!!!!!!!!!!!!")
-            print(mazesAllSizes[0][0].convertedMaze)
-        return mazesAllSizes """
