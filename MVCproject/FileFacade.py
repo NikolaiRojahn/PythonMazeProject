@@ -4,6 +4,9 @@ from csvFileReader import csvFileReader
 
 class FileFacade:
 
+    #def getSizes(self):
+    #    return csvFileReader.getSizes()
+
     def read(self, file):
         result = self.__createReader(file)
         return result
@@ -24,7 +27,8 @@ class FileFacade:
 
         if (extension == 'csv'):
             mazesAllSize = csvFileReader.read(self, file)
-            return mazesAllSize
+            sizes = csvFileReader.getSizes()
+            return (mazesAllSize, sizes)
 
     def __checkFileType(self, file):
         fileExtension = ""

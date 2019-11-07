@@ -58,8 +58,9 @@ class Controller(object):
             if self.inputfile is not None:
                 # read in file
                 print("Reading mazes from {}.".format(self.inputfile))
-                self.mazes = self.fileHandler.read(self.inputfile)
-
+                readResult = self.fileHandler.read(self.inputfile)
+                self.mazes = readResult[0]
+                self.sizes = readResult[1]
             else:
                 self.createMazes()
 
