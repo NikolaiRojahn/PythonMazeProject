@@ -26,9 +26,9 @@ class Plotting:
         size.set_ylabel("Time (ms)")
         size.legend(loc='best')
 
-        iterations.plot(x, self.iterationsMin, color='red', label='Minimum Time')
-        iterations.plot(x, self.iterationsMax, color='green', label='Maximum Time')
-        iterations.plot(x, self.iterationsAvg, color='orange', label='Average Time')
+        iterations.plot(x, self.iterationsMin, color='red', label='Minimum Iterations')
+        iterations.plot(x, self.iterationsMax, color='green', label='Maximum Iterations')
+        iterations.plot(x, self.iterationsAvg, color='orange', label='Average Iterations')
         iterations.set_title("Maze solution iterations")
         plt.sca(size)
         plt.xticks(range(len(self.mazesize)), self.mazesize)

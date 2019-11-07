@@ -116,8 +116,9 @@ class Controller(object):
             plotting = Plotting(self.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
                                 iterationsTuple[0], iterationsTuple[2], iterationsTuple[1])
 
-            plotting.plottingTime()
-            plotting.plottingIterations()
+            plotting.plotting()
+            #plotting.plottingTime()
+            #plotting.plottingIterations()
         else:
             sys.exit()
 
