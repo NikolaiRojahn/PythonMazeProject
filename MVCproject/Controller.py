@@ -82,10 +82,6 @@ class Controller(object):
             self.counterTotals.clear()
 
             for s in self.sizes:
-                # create counter and timertotal for current maze size.
-                self.timerTotals.append(TimerTotal())
-                self.counterTotals.append(CounterTotal())
-
                 # create 10 mazes of each given size, store in array.
                 mazeSubList = list()
 
