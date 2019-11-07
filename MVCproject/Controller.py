@@ -77,20 +77,20 @@ class Controller(object):
 
     def createMazes(self):
         # clear relevant arrays if previously filled.
-            self.mazes.clear()
-            self.timerTotals.clear()
-            self.counterTotals.clear()
+        self.mazes.clear()
+        self.timerTotals.clear()
+        self.counterTotals.clear()
 
-            for s in self.sizes:
-                # create 10 mazes of each given size, store in array.
-                mazeSubList = list()
+        for s in self.sizes:
+            # create 10 mazes of each given size, store in array.
+            mazeSubList = list()
 
-                # create 10 mazes of current size.
-                for x in range(10):
-                    mazeSubList.insert(x, Maze(s))
+            # create 10 mazes of current size.
+            for x in range(10):
+                mazeSubList.insert(x, Maze(s))
 
-                # store sublist in mazes.
-                self.mazes.append(mazeSubList)
+            # store sublist in mazes.
+            self.mazes.append(mazeSubList)
 
     def handlePlotting(self):
         for i, timerTotal in enumerate(self.timerTotals):
@@ -108,8 +108,7 @@ class Controller(object):
         plotting = Plotting(self.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
                             iterationsTuple[0], iterationsTuple[2], iterationsTuple[1])
                             
-        plotting.plottingTime()
-        plotting.plottingIterations()
+        plotting.plotting()
 
     # Checks arguments and sets up globals.
     # If values are invalid, an error message is displayed.
