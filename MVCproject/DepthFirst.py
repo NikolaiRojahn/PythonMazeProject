@@ -20,7 +20,8 @@ class DepthFirst(ISolveAlgorithm):
     # private method that implements depth first solving algorithm.
     def __search(self, x, y, verbose=False):
         if self.maze.convertedMaze[x][y] == 2:
-            print("found at %d,%d" % (x, y))
+            if verbose:
+                print("found at %d,%d" % (x, y))
             return True
         elif self.maze.convertedMaze[x][y] == 1:
             if verbose:

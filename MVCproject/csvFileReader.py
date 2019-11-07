@@ -34,6 +34,6 @@ class csvFileReader:
                         maze.append(row)
                 else:
                     csvFileReader.sizes = row
-            print("MAZE FROM READER!!!!!!!!!!!!!!!!!!")
-            print(mazesAllSizes[0][0].convertedMaze)
+            #print("MAZE FROM READER!!!!!!!!!!!!!!!!!!")
+            #print(mazesAllSizes[0][0].convertedMaze)
         return mazesAllSizes
