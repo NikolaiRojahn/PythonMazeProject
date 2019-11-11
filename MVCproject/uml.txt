@@ -25,7 +25,7 @@ Controller "1" *-up- "1" Model: Has a
 Controller "1" *-up- "1" View: Has a
 IView <|.down. View: Is a
 IModel <|.down. Model: Is a
-ISolveAlgorithm <|-down- DepthFirst: Is a
+ISolveAlgorithm <|.down. DepthFirst: Is a
 Model "1" *-- "*" Maze: Creates
 Model "1" *-- "1" TimerTotal: Has a
 Model "1" *-- "1" CounterTotal: Has a
