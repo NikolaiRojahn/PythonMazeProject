@@ -6,6 +6,7 @@ from CounterTotal import CounterTotal
 from Timer import Timer
 from TimerTotal import TimerTotal
 from csvFileWriter import csvFileWriter
+from csvFileReader import csvFileReader
 from Calculator import Calculator
 from Interfaces import ISolveAlgorithm
 from DepthFirst import DepthFirst
@@ -28,6 +29,7 @@ class Controller(object):
     solveAlgorithm = None
     generatedMazes = None
     __instance = None
+    fileHandler = FileFacade()
 
     @staticmethod
     def getInstance():
@@ -65,15 +67,17 @@ class Controller(object):
 
         # get result of setting up model, either True or String
         result = model.setup(arguments)
-        if(result is True):
 
-            pass
+        if(result is True):
             # 3. read from file
-            model.readFile()
+            if model.inputfile is not None:
+                model.readFile()
             # 4. generate mazes
-            model.generateMazes()
+            if model.inputfile is None:
+                model.generateMazes()
             # 5. write mazes to file
-            model.writeFile()
+            if model.outputfile is not None:
+                model.writeFile()
             # 6. solve mazes
             model.solveMazes()
             # 7. show graphs of solving mazes.

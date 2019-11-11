@@ -23,13 +23,30 @@ class FileFacade:
         else:  # no instance yet, store self as instance.
             FileFacade.__instance = self
 
-    def createWriter(self, mazes, file):
+    def read(self, filename):
+        """Reads from the specified filename"""
+        result = self.__createReader(filename)
+        return result
+
+    def write(self, mazes, file, sizes):
+        self.__createWriter(mazes, file, sizes)
+
+    def __createWriter(self, mazes, file, sizes):
+
         extension = self.__checkFileType(file)
 
         if (extension == 'csv'):
-            csvFileWriter.write(self, mazes, file)
+            csvFileWriter.write(self, mazes, file, sizes)
         else:
             raise Exception("File format doesn't exist")
+
+    def __createReader(self, file):
+        extension = self.__checkFileType(file)
+
+        if (extension == 'csv'):
+            mazesAllSize = csvFileReader.read(self, file)
+            sizes = csvFileReader.getSizes()
+            return (mazesAllSize, sizes)
 
     def __checkFileType(self, file):
         fileExtension = ""
@@ -48,10 +65,3 @@ class FileFacade:
         for i in string:
             str = i + str
         return str
-
-    def read(self, filename):
-        """Reads from the specified filename"""
-        raise NotImplementedError()
-
-    def write(self, filename, mazes):
-        self.createWriter(mazes, filename)

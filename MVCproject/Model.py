@@ -92,25 +92,26 @@ class Model(object):
             result = err.msg + "\n" + self.usage
 
         for opt, arg in opts:
+
+            print("opt: " + opt + ", arg: " + arg)
             if opt == '-h':  # help
                 result = self.usage
-
             elif opt == '-s':  # maze sizes
                 # try to split arg into array.
                 argArray = arg.split(',')
                 # convert to ints and append to sizes.
                 for s in argArray:
-                    self.addMazeSize(int(s))  # self.sizes.append(int(s))
+                    self.addMazeSize(int(s))
                 if len(self.sizes) <= 0:
                     result = "Requested sizes are not valid."
             elif opt == '-i':  # input file
-                self.inputfile = arg  # self.inputfile = arg
+                self.inputfile = arg
             elif opt == '-o':  # output file
-                self.outputfile = arg  # self.outputfile = arg
+                self.outputfile = arg
             elif opt == '--alg-solve':
                 self.setSolveAlgorithm(arg)
 
-            return result
+        return result
 
     def addMazeSize(self, size: int):
         """Adds a maze size, TimerTotal and CounterTotal objects to the collections."""
@@ -140,7 +141,9 @@ class Model(object):
         if self.inputfile is not None:
             if self._fileFacade is None:
                 self._fileFacade = FileFacade.getInstance()
-            self._fileFacade.read(self.inputfile)
+            result = self._fileFacade.read(self.inputfile)
+            self.sizes = result[1]
+            self.mazes = result[0]
 
     def generateMazes(self):
         """Generates mazes if sizes are set up."""
@@ -185,9 +188,10 @@ class Model(object):
         if self.outputfile is not None:
             if self._fileFacade is None:
                 self._fileFacade = FileFacade.getInstance()
-            self._fileFacade.write(self.outputfile)
+            self._fileFacade.write(self.mazes, self.outputfile, self.sizes)
 
     def showGraphs(self):
+        """Calls plotting lib for showing graphs of maze solving times and iterations."""
         timeTuple = self.plottingTimeValues()
         iterationsTuple = self.plottingIterationValues()
 
@@ -195,8 +199,7 @@ class Model(object):
         plotting = Plotting(self.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
                             iterationsTuple[0], iterationsTuple[2], iterationsTuple[1])
 
-        plotting.plottingTime()
-        plotting.plottingIterations()
+        plotting.plotting()
 
     def plottingTimeValues(self) -> (list, list, list):
         """Calculates min, avg and max times for each maze size."""
