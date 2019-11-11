@@ -22,7 +22,7 @@ class Controller(object):
     timerTotals: list = list()
     counterTotals: list = list()
     solveAlgorithms = ["dfs"]
-    usage = 'Controller.py -s size1,size2,...,sizeN --alg-solve=<name> [-i <inputfile> -o <outputfile>]'
+
     inputfile = None
     outputfile = None
     solveAlgorithm = None
@@ -43,7 +43,7 @@ class Controller(object):
         pass
         # self.model = model
         # self.view = view
-
+        self.usage = "Controller usage"
         # Virtually private constructor.
         if Controller.__instance is not None:
             raise Exception("Controller is a singleton.")
@@ -56,21 +56,28 @@ class Controller(object):
         # 2. set values on model facade
         # 3. read from file
         # 4. generate mazes
-        # 5. solve mazes
-        # 6. write mazes to file
+        # 5. write mazes to file
+        # 6. solve mazes
         # 7. show graphs of solving mazes.
 
         # get instance of model.
-        model = Model.getInstance()
+        model: Model = Model.getInstance()
+
         # get result of setting up model, either True or String
         result = model.setup(arguments)
         if(result is True):
+
             pass
             # 3. read from file
+            model.readFile()
             # 4. generate mazes
-            # 5. solve mazes
-            # 6. write mazes to file
+            model.generateMazes()
+            # 5. write mazes to file
+            model.writeFile()
+            # 6. solve mazes
+            model.solveMazes()
             # 7. show graphs of solving mazes.
+            model.showGraphs()
         else:
             print(result)
             exit(1)

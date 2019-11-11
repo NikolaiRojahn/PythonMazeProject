@@ -12,21 +12,25 @@ from Interfaces import ISolveAlgorithm
 from DepthFirst import DepthFirst
 from FileFacade import FileFacade
 from Plotting import Plotting
+import getopt
 
 
 class Model(object):
 
     # static variables.
-    mazes: list = list()
-    sizes: list = list()
-    timerTotals: list = list()
-    counterTotals: list = list()
-    solveAlgorithms = ["dfs"]
-    inputfile = None
-    outputfile = None
-    solveAlgorithm = None
-    generatedMazes = None
+    # mazes: list = list()
+    # sizes: list = list()
+    # timerTotals: list = list()
+    # counterTotals: list = list()
+
+    # solveAlgorithm = "dfs"
+    # solveAlgorithms = ["dfs"]
+
+    # inputfile = None
+    # outputfile = None
+    # generatedMazes = None
     __instance = None
+    usage = 'Controller.py -s size1,size2,...,sizeN --alg-solve=<name> [-i <inputfile> -o <outputfile>]'
 
     @staticmethod
     def getInstance():
@@ -37,7 +41,6 @@ class Model(object):
         return Model.__instance
 
     # constructor
-
     def __init__(self):
         # do we already have an instance, raise exeption.
         if Model.__instance is not None:
@@ -45,3 +48,183 @@ class Model(object):
                 "Model is a singleton, use Model.getInstance() to obtain instance.")
         else:  # no instance yet, store self as instance.
             Model.__instance = self
+
+            # set up instance variables.
+            self.mazes: list = list()
+            self.sizes: list = list()
+            self.timerTotals: list = list()
+            self.counterTotals: list = list()
+
+            self.solveAlgorithm = "dfs"
+            self.solveAlgorithms = ["dfs"]
+
+            self._inputfile = None
+            self._outputfile = None
+            self._fileFacade = None
+            self.generatedMazes = None
+
+    # inputfile getter
+    @property
+    def inputfile(self):
+        return self._inputfile
+    # inputfile setter
+    @inputfile.setter
+    def inputfile(self, value: str):
+        self._inputfile = value
+
+    # outputfile getter
+    @property
+    def outputfile(self):
+        return self._outputfile
+    # outputfile setter
+    @outputfile.setter
+    def outputfile(self, value: str):
+        self._outputfile = value
+
+    def setup(self, arguments):
+        """Checks validity and presence of arguments and sets up the model."""
+        result = True  # return value presuming all is ok.
+
+        try:
+            opts, args = getopt.getopt(
+                arguments, "hs:i:o:", ["alg-generate", "alg-solve"])
+        except getopt.GetoptError as err:
+            result = err.msg + "\n" + self.usage
+
+        for opt, arg in opts:
+            if opt == '-h':  # help
+                result = self.usage
+
+            elif opt == '-s':  # maze sizes
+                # try to split arg into array.
+                argArray = arg.split(',')
+                # convert to ints and append to sizes.
+                for s in argArray:
+                    self.addMazeSize(int(s))  # self.sizes.append(int(s))
+                if len(self.sizes) <= 0:
+                    result = "Requested sizes are not valid."
+            elif opt == '-i':  # input file
+                self.inputfile = arg  # self.inputfile = arg
+            elif opt == '-o':  # output file
+                self.outputfile = arg  # self.outputfile = arg
+            elif opt == '--alg-solve':
+                self.setSolveAlgorithm(arg)
+
+            return result
+
+    def addMazeSize(self, size: int):
+        """Adds a maze size, TimerTotal and CounterTotal objects to the collections."""
+        self.sizes.append(abs(size))
+        self.timerTotals.append(TimerTotal())
+        self.counterTotals.append(CounterTotal())
+
+    # def setInputFile(self, arg: str):
+    #     """Sets input file to read from."""
+    #     self.inputfile = arg
+
+    # def setOutputFile(self, arg: str):
+    #     """Sets output file to write to."""
+    #     self.outputfile = arg
+
+    def setSolveAlgorithm(self, arg):
+        """Sets the solving algorithm. If arg is invalid, the solving algorithm defaults to "dfs"."""
+        if arg in self.solveAlgorithms:
+            self.solveAlgorithm = arg
+
+    def addSolvingAlgorithm(self, arg: str):
+        """Adds an alias for a solving algorithm to the collection"""
+        self.solveAlgorithms.append(arg)
+
+    def readFile(self):
+        """Reads from file if input file is set up."""
+        if self.inputfile is not None:
+            if self._fileFacade is None:
+                self._fileFacade = FileFacade.getInstance()
+            self._fileFacade.read(self.inputfile)
+
+    def generateMazes(self):
+        """Generates mazes if sizes are set up."""
+        for size in self.sizes:
+            # create 10 mazes of each given size, store in placeholder array.
+            mazeSubList = list()
+            for x in range(10):
+                mazeSubList.insert(x, Maze(size))
+
+            # store sublist in mazes.
+            self.mazes.append(mazeSubList)
+
+    def solveMazes(self):
+        """Solves mazes using selected solving algorithm."""
+        # set up instance of solving algorithm.
+        if self.solveAlgorithm == "dfs":
+            sa: ISolveAlgorithm = DepthFirst()
+        else:
+            raise NotImplementedError
+
+        # loop through outer maze container collection.
+        for i, mazeList in enumerate(self.mazes):
+
+            # get corresponding TimerTotal and Counter objects.
+            timerTotal = self.timerTotals[i]
+
+            counterTotal = self.counterTotals[i]
+            counter = Counter()
+            # loop through actual mazes and time the solution.
+            for maze in mazeList:
+                timer = Timer()
+                timer.StartTimer()
+                sa.solve(maze, counter)
+                timer.EndTimer()
+
+                timerTotal.addTimeToMazeSolutionTimesList(timer.GetTimer())
+                counterTotal.addCounterToMazeSolutionCountersList(
+                    counter.GetNumberOfPointsVisited())
+
+    def writeFile(self):
+        """Writes mazes to file if output file is set up."""
+        if self.outputfile is not None:
+            if self._fileFacade is None:
+                self._fileFacade = FileFacade.getInstance()
+            self._fileFacade.write(self.outputfile)
+
+    def showGraphs(self):
+        timeTuple = self.plottingTimeValues()
+        iterationsTuple = self.plottingIterationValues()
+
+        # mazesize, timeMin, timeMax, timeAvg, iterationsMin, iterationsMax, iterationsAvg
+        plotting = Plotting(self.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
+                            iterationsTuple[0], iterationsTuple[2], iterationsTuple[1])
+
+        plotting.plottingTime()
+        plotting.plottingIterations()
+
+    def plottingTimeValues(self) -> (list, list, list):
+        """Calculates min, avg and max times for each maze size."""
+        minTime = []
+        avgTime = []
+        maxTime = []
+
+        for i, j in enumerate(self.sizes):
+            timerTotal = self.timerTotals[i]
+            minTime.append(timerTotal.getMinimumTimeForMazeSolutionTimes())
+            avgTime.append(timerTotal.getAverageTimeForMazeSolutionTimes())
+            maxTime.append(timerTotal.getMaximumTimeForMazeSolutionTimes())
+
+        return (minTime, avgTime, maxTime)
+
+    def plottingIterationValues(self) -> (list, list, list):
+        """Calculates min, avg and max iterations for each maze size."""
+        minIterations = []
+        avgIterations = []
+        maxIterations = []
+
+        for i, j in enumerate(self.sizes):
+            counterTotal = self.counterTotals[i]
+            minIterations.append(
+                counterTotal.getMinimumCounterForMazeSolutionCounters())
+            avgIterations.append(
+                counterTotal.getAverageCounterForMazeSolutionCounters())
+            maxIterations.append(
+                counterTotal.getMaximumCounterForMazeSolutionCounters())
+
+        return (minIterations, avgIterations, maxIterations)
