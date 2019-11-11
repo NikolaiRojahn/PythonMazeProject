@@ -142,8 +142,13 @@ class Model(object):
             if self._fileFacade is None:
                 self._fileFacade = FileFacade.getInstance()
             result = self._fileFacade.read(self.inputfile)
-            self.sizes = result[1]
             self.mazes = result[0]
+            self.sizes = result[1]
+
+            # add counters and timers to collections.
+            for size in self.sizes:
+                self.timerTotals.append(TimerTotal())
+                self.counterTotals.append(CounterTotal())
 
     def generateMazes(self):
         """Generates mazes if sizes are set up."""
