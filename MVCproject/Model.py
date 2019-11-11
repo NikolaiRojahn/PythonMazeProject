@@ -142,10 +142,11 @@ class Model(object):
             if self._fileFacade is None:
                 self._fileFacade = FileFacade.getInstance()
             result = self._fileFacade.read(self.inputfile)
-            self.mazes = result[0]
-            self.sizes = result[1]
 
-            # add counters and timers to collections.
+            self.mazes = result[0]  # the array of all mazes.
+            self.sizes = result[1]  # the sizes read in from file.
+
+            # add counters and timers to collections, needed for calculating averages for plotting.
             for size in self.sizes:
                 self.timerTotals.append(TimerTotal())
                 self.counterTotals.append(CounterTotal())
