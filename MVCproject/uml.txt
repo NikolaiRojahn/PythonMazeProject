@@ -1,0 +1,43 @@
+@startuml
+
+title Maze project
+
+class Controller
+interface IView
+class View
+interface IModel
+class Model
+interface ISolveAlgorithm
+class DepthFirst
+class Maze
+class TimerTotal
+class Timer
+class CounterTotal
+class Counter
+interface IFileFacade
+class FileFacade
+interface IFileReader
+class csvFileReader
+interface IFileWriter
+class csvFileWriter
+
+Controller "1" *-up- "1" Model: Has a
+Controller "1" *-up- "1" View: Has a
+IView <|.down. View: Is a
+IModel <|.down. Model: Is a
+ISolveAlgorithm <|-down- DepthFirst: Is a
+Model "1" *-- "*" Maze: Creates
+Model "1" *-- "1" TimerTotal: Has a
+Model "1" *-- "1" CounterTotal: Has a
+Model "1" *-- "*" Timer: Uses
+Model "1" *-- "*" Counter: Uses
+Model "1" o-- "1" FileFacade: Writes file through
+Model "1" *-- "1" ISolveAlgorithm: Injects maze into
+FileFacade "1" *-- "1" IFileWriter: Writes file with
+FileFacade "1" *-- "1" IFileReader: Reads file with
+IFileFacade <|.. FileFacade: Implements
+IFileReader <|.. csvFileReader: Is a
+IFileWriter <|.. csvFileWriter: Is a
+
+
+@enduml
