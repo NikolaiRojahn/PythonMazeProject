@@ -165,6 +165,7 @@ class Model(object):
     def solveMazes(self):
         """Solves mazes using selected solving algorithm."""
         # set up instance of solving algorithm.
+        sa: ISolveAlgorithm = None
         if self.solveAlgorithm == "dfs":
             sa: ISolveAlgorithm = DepthFirst()
         else:
@@ -175,17 +176,13 @@ class Model(object):
 
             # get corresponding TimerTotal and Counter objects.
             timerTotal = self.timerTotals[i]
-
             counterTotal = self.counterTotals[i]
             counter = Counter()
             # loop through actual mazes and time the solution.
             for maze in mazeList:
-                timer = Timer()
-                timer.StartTimer()
-                sa.solve(maze, counter)
-                timer.EndTimer()
-
-                timerTotal.addTimeToMazeSolutionTimesList(timer.GetTimer())
+                timer = sa.solve(maze, counter)
+                timerTotal.addTimeToMazeSolutionTimesList(
+                    timer.GetTimer())
                 counterTotal.addCounterToMazeSolutionCountersList(
                     counter.GetNumberOfPointsVisited())
 

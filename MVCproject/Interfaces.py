@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from Maze import Maze
 from Counter import Counter
+from Timer import Timer
 
 # ICreateAlgorithm interface (abstract class)
 # class ICreateAlgorithm(object):
@@ -16,6 +17,6 @@ class ISolveAlgorithm(object):
 
     @abstractmethod
     def solve(self, maze: Maze,
-              counter: Counter) -> Counter: raise NotImplementedError
+              counter: Counter) -> Timer: raise NotImplementedError
 
 #

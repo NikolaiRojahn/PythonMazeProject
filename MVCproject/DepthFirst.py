@@ -1,5 +1,6 @@
 from Interfaces import ISolveAlgorithm
 from Counter import Counter
+from Timer import Timer
 
 
 class DepthFirst(ISolveAlgorithm):
@@ -11,11 +12,16 @@ class DepthFirst(ISolveAlgorithm):
     #     self.counter = Counter
 
     # implement ISolveAlgorithm.
-    def solve(self, maze, counter) -> Counter:
+    def solve(self, maze, counter) -> Timer:
+        """Solves a maze and counts iterations and time consumption."""
+        timer = Timer()
         self.maze = maze
+        # store counter on self, so it can be referenced recursively.
         self.counter = counter
+        timer.StartTimer()
         self.__search(1, 1)
-        return self.counter
+        timer.EndTimer()
+        return timer
 
     # private method that implements depth first solving algorithm.
     def __search(self, x, y, verbose=False):
