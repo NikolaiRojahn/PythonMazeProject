@@ -16,7 +16,8 @@ class ISolveAlgorithm(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def solve(self, maze: Maze,
-              counter: Counter) -> Timer: raise NotImplementedError
+    def solve(self, maze: Maze) -> (Timer, Counter): raise NotImplementedError
+    # def solve(self, maze: Maze,
+    #   counter: Counter) -> Timer: raise NotImplementedError
 
 #

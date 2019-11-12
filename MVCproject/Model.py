@@ -177,14 +177,16 @@ class Model(object):
             # get corresponding TimerTotal and Counter objects.
             timerTotal = self.timerTotals[i]
             counterTotal = self.counterTotals[i]
-            counter = Counter()
+            # counter = Counter()
             # loop through actual mazes and time the solution.
             for maze in mazeList:
-                timer = sa.solve(maze, counter)
+                print(maze)
+                result: (Timer, Counter) = sa.solve(maze)
                 timerTotal.addTimeToMazeSolutionTimesList(
-                    timer.GetTimer())
+                    result[0].GetTimer())
                 counterTotal.addCounterToMazeSolutionCountersList(
-                    counter.GetNumberOfPointsVisited())
+                    result[1].GetNumberOfPointsVisited())
+                result = None
 
     def writeFile(self):
         """Writes mazes to file if output file is set up."""
