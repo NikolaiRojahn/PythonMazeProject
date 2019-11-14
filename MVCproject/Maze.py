@@ -44,20 +44,25 @@ class Maze:
         maze = [[[] for b in range(self.size)] for a in range(self.size)]
         return maze
 
-    def convert(self, maze, verbose=True):
-        pretty_maze = [["1"]*(2*len(maze[0])+1) for a in range(2*len(maze)+1)]
+    def convert(self, maze, verbose=False):
+        # pretty_maze = [["1"]*(2*len(maze[0])+1) for a in range(2*len(maze)+1)]
+        pretty_maze = [[1]*(2*len(maze[0])+1) for a in range(2*len(maze)+1)]
         if verbose:
             print(str(pretty_maze))
         for y, row in enumerate(maze):
             for x, col in enumerate(row):
                 # Check for endpoint position
                 if y == len(maze)-1 and x == len(row)-1:
-                    pretty_maze[2*y+1][2*x+1] = "2"
+                    # pretty_maze[2*y+1][2*x+1] = "2"
+                    pretty_maze[2*y+1][2*x+1] = 2
                 else:
-                    pretty_maze[2*y+1][2*x+1] = "0"
+                    # pretty_maze[2*y+1][2*x+1] = "0"
+                    pretty_maze[2*y+1][2*x+1] = 0
                     for direction in col:
+                        # pretty_maze[2*y+1+direction[0]
+                        #             ][2*x+1+direction[1]] = "0"
                         pretty_maze[2*y+1+direction[0]
-                                    ][2*x+1+direction[1]] = "0"
+                                    ][2*x+1+direction[1]] = 0
         if verbose:
             print(str(pretty_maze))
         return pretty_maze

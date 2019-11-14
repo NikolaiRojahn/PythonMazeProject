@@ -19,8 +19,7 @@ class DepthFirst(ISolveAlgorithm):
         counter = Counter()
         timer = Timer()
         self.maze = maze
-        print(self.maze.convertedMaze)
-        # print("PRETTY maze: " + maze.pretty_print())
+
         timer.StartTimer()
         self.__search(1, 1, counter)
         timer.EndTimer()

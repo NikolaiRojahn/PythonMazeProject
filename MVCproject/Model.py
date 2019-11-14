@@ -163,7 +163,6 @@ class Model(object):
 
             # store sublist in mazes.
             self.mazes.append(mazeSubList)
-            # print(self.mazes)
 
     def solveMazes(self):
         """Solves mazes using selected solving algorithm."""
@@ -179,7 +178,7 @@ class Model(object):
             # get corresponding TimerTotal and Counter objects.
             timerTotal = self.timerTotals[i]
             counterTotal = self.counterTotals[i]
-            # counter = Counter()
+
             # loop through actual mazes and time the solution.
             for maze in mazeList:
                 # print(maze)
