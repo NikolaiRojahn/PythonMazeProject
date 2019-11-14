@@ -17,18 +17,13 @@ class DepthFirst(ISolveAlgorithm):
     def solve(self, maze: Maze) -> (Timer, Counter):
         """Solves a maze and counts iterations and time consumption."""
         counter = Counter()
-        print("PRE counter: " + str(counter) +
-              str(counter.GetNumberOfPointsVisited()))
-
         timer = Timer()
-
         self.maze = maze
+        print(self.maze.convertedMaze)
         # print("PRETTY maze: " + maze.pretty_print())
         timer.StartTimer()
         self.__search(1, 1, counter)
         timer.EndTimer()
-        print("POST counter: " + str(counter) +
-              str(counter.GetNumberOfPointsVisited()))
         return (timer, counter)
 
     # private method that implements depth first solving algorithm.
@@ -42,7 +37,7 @@ class DepthFirst(ISolveAlgorithm):
                 print('wall at %d,%d' % (x, y))
             return (False)
         elif self.maze.convertedMaze[x][y] == 3:
-            counter.AddToCounterList('visited at %d,%d')
+            counter.AddToCounterList('visited at %d,%d' % (x, y))
             if verbose:
                 print('visited at %d,%d' % (x, y))
             return (False)

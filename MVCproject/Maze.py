@@ -44,8 +44,10 @@ class Maze:
         maze = [[[] for b in range(self.size)] for a in range(self.size)]
         return maze
 
-    def convert(self, maze):
+    def convert(self, maze, verbose=True):
         pretty_maze = [["1"]*(2*len(maze[0])+1) for a in range(2*len(maze)+1)]
+        if verbose:
+            print(str(pretty_maze))
         for y, row in enumerate(maze):
             for x, col in enumerate(row):
                 # Check for endpoint position
@@ -56,6 +58,8 @@ class Maze:
                     for direction in col:
                         pretty_maze[2*y+1+direction[0]
                                     ][2*x+1+direction[1]] = "0"
+        if verbose:
+            print(str(pretty_maze))
         return pretty_maze
 
     def ConvertedStrMazeToGridOfInt(self, cMaze):
