@@ -146,6 +146,8 @@ class Model(object):
             self.mazes = result[0]  # the array of all mazes.
             self.sizes = result[1]  # the sizes read in from file.
 
+            # print(self.mazes)
+
             # add counters and timers to collections, needed for calculating averages for plotting.
             for size in self.sizes:
                 self.timerTotals.append(TimerTotal())
@@ -161,6 +163,7 @@ class Model(object):
 
             # store sublist in mazes.
             self.mazes.append(mazeSubList)
+            # print(self.mazes)
 
     def solveMazes(self):
         """Solves mazes using selected solving algorithm."""

@@ -17,13 +17,17 @@ class DepthFirst(ISolveAlgorithm):
     def solve(self, maze: Maze) -> (Timer, Counter):
         """Solves a maze and counts iterations and time consumption."""
         counter = Counter()
+        print("PRE counter: " + str(counter) +
+              str(counter.GetNumberOfPointsVisited()))
+
         timer = Timer()
 
         self.maze = maze
+        # print("PRETTY maze: " + maze.pretty_print())
         timer.StartTimer()
         self.__search(1, 1, counter)
         timer.EndTimer()
-        print("counter: " + str(counter) +
+        print("POST counter: " + str(counter) +
               str(counter.GetNumberOfPointsVisited()))
         return (timer, counter)
 
