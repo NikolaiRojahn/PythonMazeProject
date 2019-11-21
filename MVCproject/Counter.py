@@ -10,3 +10,9 @@ class Counter:
 
     def GetNumberOfPointsVisitedWithText(self):
         return str(self.GetNumberOfPointsVisited()) + " " + "points has been visited"
+
+    def toString(self):
+        returnValue = "DOH"
+        for item in self.countVisited:
+            # returnValue = returnValue + " " + item
+            print(item)
