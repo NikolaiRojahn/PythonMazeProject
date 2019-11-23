@@ -127,16 +127,22 @@ class Model(object):
     #     """Sets output file to write to."""
     #     self.outputfile = arg
 
-    def setSolveAlgorithm(self, arg):
-        """Sets the solving algorithm. If arg is invalid, the solving algorithm defaults to "dfs"."""
+    def setSolveAlgorithm(self, arg: str) -> str:
+        """
+        Sets the solving algorithm. If arg is invalid, the solving algorithm defaults to "dfs".
+        POST: Returns a string confirmation.
+        """
         if arg in self.solveAlgorithms:
             self.solveAlgorithm = arg
+        return "Solve algorithm set to " + self.solveAlgorithm
+
+    
 
     def addSolvingAlgorithm(self, arg: str):
         """Adds an alias for a solving algorithm to the collection"""
         self.solveAlgorithms.append(arg)
 
-    def readFile(self):
+    def readFile(self) -> str:
         """Reads from file if input file is set up."""
         if self.inputfile is not None:
             if self._fileFacade is None:

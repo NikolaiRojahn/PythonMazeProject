@@ -1,38 +1,77 @@
-class View:
+class View(object):
+
     def __init__(self):
+        self.observers = list()
         self.choiceSelected = None
+        self._state = "stateStr"
+        self._data = "dataStr"
+        # String "constants" for view's state, can be reassigned, just don't do it!
+        self.SELECT_ALGORITHM = "selectAlgorithm"
+        self.READ_FROM_FILE = "readFromFile"
+        self.WRITE_TO_FILE = "writeToFile"
+        self.ADD_MAZE_SIZE = "addMazeSize"
+        self.SOLVE_MAZES = "solveMazes"
+        self.SHOW_GRAPHS = "showGraphs"
+
         self.choices = {
             # each entry in the map has a string for the
             # menu and a method to call upon selection.
-
             0: ("Exit Program", lambda: {}),  # do nothing
-            1: ("Select algorithm", self.setAlgorithm),
+            1: ("Select algorithm", self.selectAlgorithm),
             2: ("Read from file", self.readFromFile),
             3: ("Write to file", self.writeToFile),
             4: ("Add maze size(s)", self.addMazeSizes),
             5: ("Solve mazes", self.solveMazes),
             6: ("Show graphs", self.showGraphs)
-
-
         }
 
-    def setAlgorithm(self):
-        print("setAlgorithm")
+    @property
+    def state(self):
+        return self._state
+
+    @property
+    def data(self):
+        return self._data
+
+    def attach(self, observer):
+        self.observers.append(observer)
+
+    def selectAlgorithm(self):
+        # prompt for algorithm.
+        self._data = input(
+            "Type algorithm code: ")
+        self._state = self.SELECT_ALGORITHM
+
+        self.notify()
 
     def readFromFile(self):
-        print("readFromFile")
+        # prompt for filename.
+        self._data = input("Type filename: ")
+        self._state = self.READ_FROM_FILE
+        self.notify()
 
     def writeToFile(self):
-        pass
+        self._data = input("Type filename: ")
+        self._state = self.WRITE_TO_FILE
+        self.notify()
 
     def addMazeSizes(self):
-        pass
+        self._data = input("Type maze sizes separated with commas: ")
+        self.state = self.ADD_MAZE_SIZE
+        self.notify()
 
     def solveMazes(self):
-        pass
+        self._state = self.SOLVE_MAZES
+        self.notify()
 
     def showGraphs(self):
-        pass
+        self._state = self.SHOW_GRAPHS
+        self.notify()
+
+    def notify(self):
+        for observer in self.observers:
+            # Q&D just print result of observer.update - we might have more observers in this pattern but not here.
+            print(observer.update())
 
     def menu(self):
         """ Prints a menu of strings in self.choices, reads user input and stores it in self.selection. """
@@ -77,4 +116,8 @@ class View:
 if __name__ == '__main__':
     # print(sys.argv[1:])
     view = View()
+
+    print(view.state)
+    print(view.data)
+
     view.menu()

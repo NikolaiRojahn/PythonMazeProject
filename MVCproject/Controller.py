@@ -12,7 +12,7 @@ from Interfaces import ISolveAlgorithm
 from DepthFirst import DepthFirst
 from FileFacade import FileFacade
 from Plotting import Plotting
-
+from View import View
 from Model import Model
 
 
@@ -32,19 +32,21 @@ class Controller(object):
     fileHandler = FileFacade()
 
     @staticmethod
-    def getInstance():
+    def getInstance(view, model):
         # is instance reference None, call constructor.
         if Controller.__instance is None:
-            Controller()
+            Controller(view, model)
         # return the instance
         return Controller.__instance
 
     # constructor - composition of model, view (dependency injection)
     # def __init__(self, model, view):
-    def __init__(self):
-        pass
-        # self.model = model
-        # self.view = view
+    def __init__(self, view, model):
+        self.model = model
+        self.view = view
+        # observe state changes in the view.
+        self.view.attach(self)
+
         self.usage = "Controller usage"
         # Virtually private constructor.
         if Controller.__instance is not None:
@@ -52,7 +54,41 @@ class Controller(object):
         else:
             Controller.__instance = self
 
-    def runProgram(self, arguments):
+    def runProgram(self):
+        # Start the view's menu and listen for changes.
+        self.view.menu()
+
+    def update(self, verbose=False) -> str:
+
+        if (self.view.state == self.view.SELECT_ALGORITHM):
+            if (verbose):
+                print("Setting up selected algorithm for solving to " + self.view.data)
+            return self.model.setSolveAlgorithm(self.view.data)
+
+        if (self.view.state == self.view.READ_FROM_FILE):
+            if (verbose):
+                print("Reading from " + self.view.data)
+            self.model.inputfile = self.view.data
+            self.model.readFile()
+            # TBD ship result back to view for display
+
+        if (self.view.state == self.view.WRITE_TO_FILE):
+            if (verbose):
+                print("Writing to file: " + self.view.data)
+            self.model.writeFile()
+
+        if (self.view.state == self.view.ADD_MAZE_SIZE):
+            if (verbose):
+                print("Adding size: " + self.view.data)
+            self.model.addMazeSize(self.view.data)
+
+        if (self.view.state == self.view.SOLVE_MAZES):
+            if (verbose):
+                print("Solving mazes...")
+            self.model.solveMazes()
+            # TBD here we will ship result to view for display.
+
+    def runProgram2(self, arguments):
         # Pseudo code:
         # 1. check arguments
         # 2. set values on model facade
@@ -88,6 +124,8 @@ class Controller(object):
 
 
 if __name__ == '__main__':
-    # print(sys.argv[1:])
-    c = Controller.getInstance()
-    c.runProgram(sys.argv[1:])
+    view = View()
+    model = Model.getInstance()
+    c = Controller.getInstance(view, model)
+    c.runProgram()
+    # c.runProgram2(sys.argv[1:])
