@@ -40,7 +40,6 @@ class Controller(object):
         return Controller.__instance
 
     # constructor - composition of model, view (dependency injection)
-    # def __init__(self, model, view):
     def __init__(self, view, model):
         self.model = model
         self.view = view
@@ -59,7 +58,10 @@ class Controller(object):
         self.view.menu()
 
     def update(self, verbose=False) -> str:
-
+        """
+        This method is called whenever e.g. state has changed in the object this Controller observes.
+        The Controller interprets the new state and handles it by use of its model.
+        """
         if (self.view.state == self.view.SELECT_ALGORITHM):
             if (verbose):
                 print("Setting up selected algorithm for solving to " + self.view.data)
@@ -69,24 +71,94 @@ class Controller(object):
             if (verbose):
                 print("Reading from " + self.view.data)
             self.model.inputfile = self.view.data
-            self.model.readFile()
-            # TBD ship result back to view for display
+
+            # catch any low-level exceptions here and translate into user friendly error msg.:
+            try:
+                self.model.readFile()
+                return self.model.inputfile + " was successfully read."
+            except BaseException as e:
+                return self.model.inputfile + " could not be read: " + str(e)
 
         if (self.view.state == self.view.WRITE_TO_FILE):
             if (verbose):
                 print("Writing to file: " + self.view.data)
-            self.model.writeFile()
+            self.model.outputfile = self.view.data
+            # catch any low-level exceptions here and translate into user friendly error msg.:
+            try:
+                self.model.writeFile()
+                return self.model.outputfile + " was successfully written."
+            except BaseException as e:
+                return self.model.outputfile + " could not be written: " + str(e)
 
         if (self.view.state == self.view.ADD_MAZE_SIZE):
             if (verbose):
                 print("Adding size: " + self.view.data)
-            self.model.addMazeSize(self.view.data)
+
+            # copy current sizes prior to clearing collections.
+            currentSizes = self.model.sizes.copy() if self.model.sizes is not None else list()
+
+            # clear previous collections in model.
+            self.model.clearMazeSizes()
+
+            # split input array
+            input = map(lambda x: int(x), self.view.data.split(','))
+            # remove any new values already in current values.
+            newSizes = list(filter(lambda x: int(
+                x) not in currentSizes, input))
+
+            allsizes = currentSizes + newSizes
+            allsizes.sort()
+            # store current and new values in model.
+            for size in allsizes:
+                self.model.addMazeSize(int(size))
+            return "The following maze sizes are stored: " + str(self.model.sizes)
+
+        if (self.view.state == self.view.SHOW_MAZE_SIZES):
+            if (verbose):
+                print("Showing maze sizes...")
+            return "The following maze sizes are stored: " + str(self.model.sizes)
+
+        if (self.view.state == self.view.CLEAR_MAZE_SIZES):
+            if (verbose):
+                print("clearing maze sizes...")
+            self.model.clearMazeSizes()
+            return "Maze sizes cleared: " + str(self.model.sizes)
+
+        if (self.view.state == self.view.GENERATE_MAZES):
+            if (verbose):
+                print("Generating mazes...")
+            try:
+                self.model.generateMazes()
+                return str(len(self.model.sizes) * 10) + " mazes generated."
+            except BaseException as e:
+                return "Mazes could not be generated: " + str(e)
 
         if (self.view.state == self.view.SOLVE_MAZES):
             if (verbose):
                 print("Solving mazes...")
-            self.model.solveMazes()
-            # TBD here we will ship result to view for display.
+            try:
+                self.model.solveMazes()
+                return "Mazes are solved, select 'Show graphs' to see resulting graphs."
+            except BaseException as e:
+                return "Mazes could not be solved: " + str(e)
+
+        if (self.view.state == self.view.SHOW_GRAPHS):
+            if (verbose):
+                print("Showing graphs...")
+            try:
+                timeTuple = self.model.plottingTimeValues()
+                iterationsTuple = self.model.plottingIterationValues()
+
+                # mazesize, timeMin, timeMax, timeAvg, iterationsMin, iterationsMax, iterationsAvg
+                plotting = Plotting(self.model.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
+                                    iterationsTuple[0], iterationsTuple[2], iterationsTuple[1])
+
+                plotting.plotting()
+
+                return "Graphs are showing in an external window."
+
+            except BaseException as e:
+                return "Graphs could not be generated: " + str(e)
 
     def runProgram2(self, arguments):
         # Pseudo code:

@@ -6,10 +6,14 @@ class View(object):
         self._state = "stateStr"
         self._data = "dataStr"
         # String "constants" for view's state, can be reassigned, just don't do it!
+        # dictionary
         self.SELECT_ALGORITHM = "selectAlgorithm"
         self.READ_FROM_FILE = "readFromFile"
         self.WRITE_TO_FILE = "writeToFile"
         self.ADD_MAZE_SIZE = "addMazeSize"
+        self.SHOW_MAZE_SIZES = "showMazeSizes"
+        self.CLEAR_MAZE_SIZES = "clearMazeSizes"
+        self.GENERATE_MAZES = "generateMazes"
         self.SOLVE_MAZES = "solveMazes"
         self.SHOW_GRAPHS = "showGraphs"
 
@@ -21,8 +25,11 @@ class View(object):
             2: ("Read from file", self.readFromFile),
             3: ("Write to file", self.writeToFile),
             4: ("Add maze size(s)", self.addMazeSizes),
-            5: ("Solve mazes", self.solveMazes),
-            6: ("Show graphs", self.showGraphs)
+            5: ("Show maze size(s)", self.showMazeSizes),
+            6: ("Clear maze size(s)", self.clearMazeSizes),
+            7: ("Generate mazes", self.generateMazes),
+            8: ("Solve mazes", self.solveMazes),
+            9: ("Show graphs", self.showGraphs)
         }
 
     @property
@@ -57,7 +64,21 @@ class View(object):
 
     def addMazeSizes(self):
         self._data = input("Type maze sizes separated with commas: ")
-        self.state = self.ADD_MAZE_SIZE
+        self._state = self.ADD_MAZE_SIZE
+        self.notify()
+
+    def showMazeSizes(self):
+        self._data = ""
+        self._state = self.SHOW_MAZE_SIZES
+        self.notify()
+
+    def clearMazeSizes(self):
+        self._data = ""
+        self._state = self.CLEAR_MAZE_SIZES
+        self.notify()
+
+    def generateMazes(self):
+        self._state = self.GENERATE_MAZES
         self.notify()
 
     def solveMazes(self):
@@ -78,8 +99,7 @@ class View(object):
         while(self.choiceSelected != 0):
             if self.choiceSelected is not None:
                 if len(self.choices) > self.choiceSelected >= 0:
-                    print("You chose: " +
-                          self.choices.get(self.choiceSelected)[0])
+                    pass
                 else:
                     print("Invalid choice, try again!")
             print("-----")
