@@ -1,6 +1,5 @@
 import time
 
-
 class Timer:
     def __init__(self):
         self.timerStart = None
@@ -8,14 +7,11 @@ class Timer:
         self.timerRuntime = None
 
     def StartTimer(self):
-        self.timerStart = time.time()
+        self.timerStart = time.clock()
 
     def EndTimer(self):
-        self.timerEnd = time.time()
+        self.timerEnd = time.clock()
         self.timerRuntime = self.timerEnd - self.timerStart
 
     def GetTimer(self):
-        return self.timerRuntime
-
-    def GetTimerWithText(self):
-        return "Running time:" + " " + str(self.timerRuntime) + " " + "seconds!"
+        return self.timerRuntime * 1000

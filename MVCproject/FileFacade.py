@@ -2,7 +2,6 @@ import csv
 from csvFileWriter import csvFileWriter
 from csvFileReader import csvFileReader
 
-
 class FileFacade:
 
     # static variables.
@@ -36,6 +35,7 @@ class FileFacade:
         extension = self.__checkFileType(file)
 
         if (extension == 'csv'):
+            print("Generated mazes is writing to file {}".format(file))
             csvFileWriter.write(self, mazes, file, sizes)
         else:
             raise Exception("File format doesn't exist")

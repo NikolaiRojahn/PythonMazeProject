@@ -1,10 +1,8 @@
 from random import shuffle
 
-
 import sys
 # needed for DFS...
 sys.setrecursionlimit(10000)
-
 
 class Maze:
     maze = None
@@ -13,10 +11,13 @@ class Maze:
 
     # Q&D pseudo overload of constructor.
     def __init__(self, size=None, convertedMaze=None):
-        if size is not None:
+        if size is not None and convertedMaze is None:
             self.size = size
             self.create()
-        elif convertedMaze is not None:
+        elif convertedMaze is not None and size is None:
+            self.convertedMaze = convertedMaze
+        elif convertedMaze is not None and size is not None:
+            self.size = size
             self.convertedMaze = convertedMaze
         else:
             raise Exception()
@@ -45,7 +46,6 @@ class Maze:
         return maze
 
     def convert(self, maze, verbose=False):
-        # pretty_maze = [["1"]*(2*len(maze[0])+1) for a in range(2*len(maze)+1)]
         pretty_maze = [[1]*(2*len(maze[0])+1) for a in range(2*len(maze)+1)]
         if verbose:
             print(str(pretty_maze))
@@ -53,14 +53,10 @@ class Maze:
             for x, col in enumerate(row):
                 # Check for endpoint position
                 if y == len(maze)-1 and x == len(row)-1:
-                    # pretty_maze[2*y+1][2*x+1] = "2"
                     pretty_maze[2*y+1][2*x+1] = 2
                 else:
-                    # pretty_maze[2*y+1][2*x+1] = "0"
                     pretty_maze[2*y+1][2*x+1] = 0
                     for direction in col:
-                        # pretty_maze[2*y+1+direction[0]
-                        #             ][2*x+1+direction[1]] = "0"
                         pretty_maze[2*y+1+direction[0]
                                     ][2*x+1+direction[1]] = 0
         if verbose:

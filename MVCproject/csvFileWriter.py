@@ -2,11 +2,9 @@ import csv
 import platform
 from Maze import Maze
 
-
 class csvFileWriter:
 
     def write(self, mazeArray, fileName, sizes):
-        #print("fileInput called.", platform.os.getcwd())
         file_obj = open(fileName, "w", newline='')
         output_writer = csv.writer(file_obj)
         output_writer.writerow(sizes)

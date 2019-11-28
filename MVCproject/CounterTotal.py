@@ -1,5 +1,4 @@
 class CounterTotal:
-
     def __init__(self):
         self.MazeSolutionCounters = []
 
@@ -7,18 +6,10 @@ class CounterTotal:
         self.MazeSolutionCounters.append(counter)
 
     def getMinimumCounterForMazeSolutionCounters(self):
-        self.MazeSolutionCounters.sort()
-        return self.MazeSolutionCounters[0]
+        return min(self.MazeSolutionCounters)
 
     def getMaximumCounterForMazeSolutionCounters(self):
-        self.MazeSolutionCounters.sort()
-        return self.MazeSolutionCounters[len(self.MazeSolutionCounters) - 1]
+        return max(self.MazeSolutionCounters)
 
     def getAverageCounterForMazeSolutionCounters(self):
-        return self.calculateSumCounterForMazeSolutionCounters() / len(self.MazeSolutionCounters)
-
-    def calculateSumCounterForMazeSolutionCounters(self):
-        sum = 0
-        for i in range(len(self.MazeSolutionCounters)):
-            sum += self.MazeSolutionCounters[i]
-        return sum
+        return sum(self.MazeSolutionCounters) / len(self.MazeSolutionCounters)
