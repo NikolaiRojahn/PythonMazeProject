@@ -157,21 +157,28 @@ class Model(object):
             opts, args = getopt.getopt(
                 arguments, "hs:i:o:", ["alg-generate", "alg-solve"])
         except getopt.GetoptError as err:
-            result = err.msg + "\n" + self.usage
+            #result = err.msg + "\n" + self.usage
+            print(err.msg + "\n" + self.usage)
 
         for opt, arg in opts:
 
             print("opt: " + opt + ", arg: " + arg)
             if opt == '-h':  # help
-                result = self.usage
+                #result = self.usage
+                print(self.usage)
             elif opt == '-s':  # maze sizes
                 # try to split arg into array.
                 argArray = arg.split(',')
+                #if len(self.sizes) <= 0:
+                #print(argArray)
+                #if len(argArray) <= 0:
+                if argArray[0][:1] == '-':
+                    #result = "Requested sizes are not valid."
+                    raise Exception("Requested sizes are not valid.")
+                    #print("Requested sizes are not valid.")
                 # convert to ints and append to sizes.
                 for s in argArray:
                     self.addMazeSize(int(s))
-                if len(self.sizes) <= 0:
-                    result = "Requested sizes are not valid."
                 self.setState(self.SIZES_INPUT)
             elif opt == '-i':  # input file
                 self.inputfile = arg
