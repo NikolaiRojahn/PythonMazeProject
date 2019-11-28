@@ -1,6 +1,6 @@
 import matplotlib
 import matplotlib.pyplot as plt
-import multiprocessing
+#import multiprocessing
 
 class Plotting:
     def __init__(self, plottingDict):
@@ -12,7 +12,8 @@ class Plotting:
         self.iterationsMax = plottingDict["maxIterations"]
         self.iterationsAvg = plottingDict["avgIterations"]
 
-    def plottingGUI(self):
+    def plotting(self):
+    #def plottingGUI(self):
         x = list(range(len(self.mazesize)))
 
         fig, (size, iterations) = plt.subplots(1, 2)
@@ -42,7 +43,8 @@ class Plotting:
 
         plt.show()
 
-    def plotting(self):
-        p = multiprocessing.Process(target=self.plottingGUI, args=())
-        p.start()
-        p.join()
+    #def plotting(self):
+        #self.plottingGUI()
+        #p = multiprocessing.Process(target=self.plottingGUI, args=())
+        #p.start()
+        #p.join()
