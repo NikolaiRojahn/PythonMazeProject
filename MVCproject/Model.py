@@ -56,15 +56,17 @@ class Model(object):
         self._fileFacade = None
         self.generatedMazes = None
 
-        self.state = "stateStr"
+        self.state = None
 
         self.count = 0
 
-        self.SIZES_INPUT = "sizesInput"
-        self.SIZES_INPUT_TO_FILE = "sizesInputTofile"
-        self.SIZES_INPUTFILE = "sizesInputfile"
-        self.MAZES_SOLVE = "mazesSolve"
-        self.MAZES_PLOTTING = "mazesPlotting"
+        #self.SIZES_INPUT = "sizesInput"
+        #self.SIZES_INPUT_TO_FILE = "sizesInputTofile"
+        #self.SIZES_INPUTFILE = "sizesInputfile"
+        #self.MAZES_SOLVE = "mazesSolve"
+        #self.MAZES_PLOTTING = "mazesPlotting"
+        self.MAZES_GENERATED = "mazesGenerated"
+        self.MAZES_SOLVED = "mazesSolved"
 
     # inputfile getter
     @property
@@ -101,97 +103,40 @@ class Model(object):
     def onEvent(self):
         self.count += 1
 
-    #def onEvent(self):
-        # if self.outputfile is not None:
-        #     self.observers[len(self.observers) - 1]()
-        #     self.detach(self.observers[len(self.observers) - 1])
-        #     self.observers[0]()
-        #     self.detach(self.observers[0])
-        #     self._outputfile = None
-        # else:
-        #     self.observers[0]()
-        #     self.detach(self.observers[0])
-
     def notify(self):
         for observer in self.observers:
             observer.update()
-        # self.count += 1
-        # if self.count == len(self.sizes) * 10:
-        #     if self._state == self.SIZES_WITHOUT_OUTPUTFILE:
-        #         self.detach(self.writeFile)
-        #         print("All mazes is generated!")
-        #         self.onEvent()
-        #     if self._state == self.SIZES_WITH_OUTPUTFILE:
-        #         print("All mazes is generated!")
-        #         self.onEvent()
-        #     if self._state == self.SIZES_INPUTFILE:
-        #         self.detach(self.writeFile)
-        #         self.onEvent()
-
-    #def onEvent(self):
-    #    if self.outputfile is not None:
-    #        self.observers[len(self.observers) - 1]()
-    #        self.detach(self.observers[len(self.observers) - 1])
-    #        self.observers[0]()
-    #        self.detach(self.observers[0])
-    #        self._outputfile = None
-    #    else:
-    #        self.observers[0]()
-    #        self.detach(self.observers[0])
-
-    #def Notify(self, size, type):
-    #    self.count += 1
-    #    if self.count == size * 10:
-    #        if type == True:
-    #            print("All mazes is generated!")
-    #            self.onEvent()
-    #        else:
-    #            print("All mazes is solved")
-    #            self.onEvent()
 
     def setup(self, arguments):
         """Checks validity and presence of arguments and sets up the model."""
-        #result = True  # return value presuming all is ok.
+        result = True  # return value presuming all is ok.
 
         try:
             opts, args = getopt.getopt(
                 arguments, "hs:i:o:", ["alg-generate", "alg-solve"])
         except getopt.GetoptError as err:
-            #result = err.msg + "\n" + self.usage
-            print(err.msg + "\n" + self.usage)
+            result = err.msg + "\n" + self.usage
 
         for opt, arg in opts:
-
             print("opt: " + opt + ", arg: " + arg)
             if opt == '-h':  # help
-                #result = self.usage
-                print(self.usage)
+                result = self.usage
             elif opt == '-s':  # maze sizes
                 # try to split arg into array.
                 argArray = arg.split(',')
-                #if len(self.sizes) <= 0:
-                #print(argArray)
-                #if len(argArray) <= 0:
                 if argArray[0][:1] == '-':
-                    #result = "Requested sizes are not valid."
-                    raise Exception("Requested sizes are not valid.")
-                    #print("Requested sizes are not valid.")
+                    result = "Requested sizes are not valid."
                 # convert to ints and append to sizes.
                 for s in argArray:
                     self.addMazeSize(int(s))
-                self.setState(self.SIZES_INPUT)
             elif opt == '-i':  # input file
                 self.inputfile = arg
-                self.setState(self.SIZES_INPUTFILE)
             elif opt == '-o':  # output file
                 self.outputfile = arg
-                self.setState(self.SIZES_INPUT)
             elif opt == '--alg-solve':
                 self.setSolveAlgorithm(arg)
-        
-        self.notify()
 
-        #return result
+        return result
 
     def addMazeSize(self, size: int):
         """Adds a maze size, TimerTotal and CounterTotal objects to the collections."""
@@ -216,17 +161,8 @@ class Model(object):
             self.mazes = result[0]  # the array of all mazes.
             self.sizes = result[1]  # the sizes read in from file.
             self.makeDictionaryForMazeTimerAndCounter()
-        self.setState(self.MAZES_SOLVE)
-        self.notify()
-
-#    def generateSingleMaze(self, s, size, mazeSubList, sizes):
-#        s.acquire()
-#        obj = Maze(size)
-#        s.release()
-#        self.mutex.acquire()
-#        mazeSubList.append(obj)
-#        self.countUp(sizes, True)
-#        self.mutex.release()
+        #self.setState(self.MAZES_GENERATED)
+        #self.notify()
 
     def generateMazes(self):
         self.count = 0
@@ -245,24 +181,8 @@ class Model(object):
                 s.release()
         if self.count == (len(self.sizes) * 10):
             print("All mazes are generated")
-            if self.outputfile is None:
-                self.setState(self.MAZES_SOLVE)
-                self.notify()
-            else:
-                self.setState(self.SIZES_INPUT_TO_FILE)
-                self.notify()
-        
-    #def solvingSingleMaze(self, s, pool, maze, sa, sizes):
-    #    with s:
-    #        pool.makeActive(maze)
-    #        time.sleep(0.5)
-    #        pool.makeInactive(maze)
-    #        self.mutex.acquire()
-    #        result: (Timer, Counter) = sa.solve(maze)
-    #        self.mazeOptions[maze.size][0].addTimeToMazeSolutionTimesList(result[0].GetTimer())   
-    #        self.mazeOptions[maze.size][1].addCounterToMazeSolutionCountersList(result[1].GetNumberOfPointsVisited())
-    #        self.mutex.release()
-    #        self.countUp(sizes, False)
+            self.setState(self.MAZES_GENERATED)
+            self.notify()
 
     def solveMazes(self):
         """Solves mazes using selected solving algorithm."""
@@ -272,15 +192,6 @@ class Model(object):
         else:
             raise NotImplementedError
 
-        # loop through outer maze container collection.
-        #self.count = 0
-        #pool = ThreadPool()
-        #s = threading.Semaphore(3)
-        #for i, mazeList in enumerate(self.mazes):
-            # loop through actual mazes and time the solution.
-        #    for maze in mazeList:
-        #        t = threading.Thread(target=self.solvingSingleMaze, args=(s, pool, maze, sa, len(self.sizes)))
-        #        t.start()
         self.count = 0
         s = threading.BoundedSemaphore(3)
         for mazeList in self.mazes:
@@ -295,9 +206,8 @@ class Model(object):
                 s.release()
         if self.count == (len(self.sizes) * 10):
             print("All mazes are solved")
-            self.setState(self.MAZES_PLOTTING)
-            self.notify()
-                
+            self.setState(self.MAZES_SOLVED)
+            self.notify()                
 
     def writeFile(self):
         """Writes mazes to file if output file is set up."""
@@ -305,15 +215,15 @@ class Model(object):
             if self._fileFacade is None:
                 self._fileFacade = FileFacade.getInstance()
             self._fileFacade.write(self.mazes, self.outputfile, self.sizes)
-        self.setState(self.MAZES_SOLVE)
-        self.notify()
+        #self.setState(self.MAZES_SOLVE)
+        #self.notify()
 
     def showGraphs(self):
         """Calls plotting lib for showing graphs of maze solving times and iterations."""
         plotting = Plotting(self.makeDictionaryWithListToPlotting())
         plotting.plotting()
-        self.setState(None)
-        self.notify()
+        #self.setState(None)
+        #self.notify()
 
     def makeListToPlotting(self) -> (list, list, list, list, list, list, list):
         sizes = self.sizes
