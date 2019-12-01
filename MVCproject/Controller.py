@@ -8,7 +8,7 @@ from TimerTotal import TimerTotal
 from csvFileWriter import csvFileWriter
 from csvFileReader import csvFileReader
 from Calculator import Calculator
-from Interfaces import ISolveAlgorithm
+from Interfaces import ISolveAlgorithm, IView
 from DepthFirst import DepthFirst
 from FileFacade import FileFacade
 from Plotting import Plotting
@@ -32,7 +32,7 @@ class Controller(object):
     fileHandler = FileFacade()
 
     @staticmethod
-    def getInstance(view, model):
+    def getInstance(view: IView, model):
         # is instance reference None, call constructor.
         if Controller.__instance is None:
             Controller(view, model)
@@ -55,22 +55,22 @@ class Controller(object):
 
     def runProgram(self):
         # Start the view's menu and listen for changes.
-        self.view.menu()
+        self.view.start()
 
     def update(self, verbose=False) -> str:
         """
         This method is called whenever e.g. state has changed in the object this Controller observes.
         The Controller interprets the new state and handles it by use of its model.
         """
-        if (self.view.state == self.view.SELECT_ALGORITHM):
+        if (self.view.getState() == self.view.SELECT_ALGORITHM):
             if (verbose):
-                print("Setting up selected algorithm for solving to " + self.view.data)
-            return self.model.setSolveAlgorithm(self.view.data)
+                print("Setting up selected algorithm for solving to " + self.view.getData())
+            return self.model.setSolveAlgorithm(self.view.getData())
 
-        if (self.view.state == self.view.READ_FROM_FILE):
+        if (self.view.getState() == self.view.READ_FROM_FILE):
             if (verbose):
-                print("Reading from " + self.view.data)
-            self.model.inputfile = self.view.data
+                print("Reading from " + self.view.getData())
+            self.model.inputfile = self.view.getData()
 
             # catch any low-level exceptions here and translate into user friendly error msg.:
             try:
@@ -79,10 +79,10 @@ class Controller(object):
             except BaseException as e:
                 return self.model.inputfile + " could not be read: " + str(e)
 
-        if (self.view.state == self.view.WRITE_TO_FILE):
+        if (self.view.getState() == self.view.WRITE_TO_FILE):
             if (verbose):
-                print("Writing to file: " + self.view.data)
-            self.model.outputfile = self.view.data
+                print("Writing to file: " + self.view.getData())
+            self.model.outputfile = self.view.getData()
             # catch any low-level exceptions here and translate into user friendly error msg.:
             try:
                 self.model.writeFile()
@@ -90,9 +90,9 @@ class Controller(object):
             except BaseException as e:
                 return self.model.outputfile + " could not be written: " + str(e)
 
-        if (self.view.state == self.view.ADD_MAZE_SIZE):
+        if (self.view.getState() == self.view.ADD_MAZE_SIZE):
             if (verbose):
-                print("Adding size: " + self.view.data)
+                print("Adding size: " + self.view.getData())
 
             # copy current sizes prior to clearing collections.
             currentSizes = self.model.sizes.copy() if self.model.sizes is not None else list()
@@ -101,7 +101,7 @@ class Controller(object):
             self.model.clearMazeSizes()
 
             # split input array
-            input = map(lambda x: int(x), self.view.data.split(','))
+            input = map(lambda x: int(x), self.view.getData().split(','))
             # remove any new values already in current values.
             newSizes = list(filter(lambda x: int(
                 x) not in currentSizes, input))
@@ -113,18 +113,18 @@ class Controller(object):
                 self.model.addMazeSize(int(size))
             return "The following maze sizes are stored: " + str(self.model.sizes)
 
-        if (self.view.state == self.view.SHOW_MAZE_SIZES):
+        if (self.view.getState() == self.view.SHOW_MAZE_SIZES):
             if (verbose):
                 print("Showing maze sizes...")
             return "The following maze sizes are stored: " + str(self.model.sizes)
 
-        if (self.view.state == self.view.CLEAR_MAZE_SIZES):
+        if (self.view.getState() == self.view.CLEAR_MAZE_SIZES):
             if (verbose):
                 print("clearing maze sizes...")
             self.model.clearMazeSizes()
             return "Maze sizes cleared: " + str(self.model.sizes)
 
-        if (self.view.state == self.view.GENERATE_MAZES):
+        if (self.view.getState() == self.view.GENERATE_MAZES):
             if (verbose):
                 print("Generating mazes...")
             try:
@@ -133,7 +133,7 @@ class Controller(object):
             except BaseException as e:
                 return "Mazes could not be generated: " + str(e)
 
-        if (self.view.state == self.view.SOLVE_MAZES):
+        if (self.view.getState() == self.view.SOLVE_MAZES):
             if (verbose):
                 print("Solving mazes...")
             try:
@@ -142,7 +142,7 @@ class Controller(object):
             except BaseException as e:
                 return "Mazes could not be solved: " + str(e)
 
-        if (self.view.state == self.view.SHOW_GRAPHS):
+        if (self.view.getState() == self.view.SHOW_GRAPHS):
             if (verbose):
                 print("Showing graphs...")
             try:
