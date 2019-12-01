@@ -27,11 +27,15 @@ class IView(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def start(self): raise NotImplementedError
+    def start(self): raise NotImplementedError  # starts the view.
     @abstractmethod
+    # attaches an observer to the view
     def attach(self, observer): raise NotImplementedError
     @abstractmethod
-    def getState(self) -> str: raise NotImplementedError
+    def getState(self) -> str: raise NotImplementedError  # returns the state.
+    @abstractmethod
+    # returns data from view to observer (controller)
+    def getData(self): raise NotImplementedError
 
     # String "constants" for view's state, can be reassigned, just don't do it!
     SELECT_ALGORITHM = "selectAlgorithm"
@@ -43,3 +47,4 @@ class IView(object):
     GENERATE_MAZES = "generateMazes"
     SOLVE_MAZES = "solveMazes"
     SHOW_GRAPHS = "showGraphs"
+    GUI_SET = "guiSet"  # Only used in Gui - NOT CLI view !!!

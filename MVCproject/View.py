@@ -38,6 +38,9 @@ class View(IView):
     def getState(self) -> str:
         return self.state
 
+    def getData(self):
+        return self.data
+
     def selectAlgorithm(self):
         # prompt for algorithm.
         self._data = input(
