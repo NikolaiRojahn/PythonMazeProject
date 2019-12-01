@@ -119,30 +119,35 @@ class Model(object):
         self.timerTotals.append(TimerTotal())
         self.counterTotals.append(CounterTotal())
 
-    # def setInputFile(self, arg: str):
-    #     """Sets input file to read from."""
-    #     self.inputfile = arg
+    def clearMazeSizes(self):
+        """Clears sizes, mazes, timerTotals and counterTotals in the model. """
+        self.sizes.clear()
+        self.mazes.clear()
+        self.timerTotals.clear()
+        self.counterTotals.clear()
 
-    # def setOutputFile(self, arg: str):
-    #     """Sets output file to write to."""
-    #     self.outputfile = arg
-
-    def setSolveAlgorithm(self, arg):
-        """Sets the solving algorithm. If arg is invalid, the solving algorithm defaults to "dfs"."""
+    def setSolveAlgorithm(self, arg: str) -> str:
+        """
+        Sets the solving algorithm. If arg is invalid, the solving algorithm defaults to "dfs".
+        POST: Returns a string confirmation.
+        """
         if arg in self.solveAlgorithms:
             self.solveAlgorithm = arg
+        return "Solve algorithm set to " + self.solveAlgorithm
 
     def addSolvingAlgorithm(self, arg: str):
         """Adds an alias for a solving algorithm to the collection"""
         self.solveAlgorithms.append(arg)
 
-    def readFile(self):
+    def readFile(self) -> str:
         """Reads from file if input file is set up."""
         if self.inputfile is not None:
             if self._fileFacade is None:
                 self._fileFacade = FileFacade.getInstance()
             result = self._fileFacade.read(self.inputfile)
 
+            # clear previous collections.
+            self.clearMazeSizes()
             self.mazes = result[0]  # the array of all mazes.
             self.sizes = result[1]  # the sizes read in from file.
 
@@ -155,6 +160,10 @@ class Model(object):
 
     def generateMazes(self):
         """Generates mazes if sizes are set up."""
+        if len(self.sizes) <= 0:
+            raise Exception("No maze sizes in system. Try adding sizes first.")
+
+        # self.mazes.clear()
         for size in self.sizes:
             # create 10 mazes of each given size, store in placeholder array.
             mazeSubList = list()
@@ -166,22 +175,25 @@ class Model(object):
 
     def solveMazes(self):
         """Solves mazes using selected solving algorithm."""
-        # set up instance of solving algorithm.
+        # set up instance of solving algorithm.        
         sa: ISolveAlgorithm = None
         if self.solveAlgorithm == "dfs":
             sa: ISolveAlgorithm = DepthFirst()
         else:
             raise NotImplementedError
 
-        # loop through outer maze container collection.
+        if len(self.mazes) == 0:
+            raise Exception(
+                "No generated mazes in system. Try generating mazes first.")
+
+        # loop through outer maze container collection.        
         for i, mazeList in enumerate(self.mazes):
             # get corresponding TimerTotal and Counter objects.
             timerTotal = self.timerTotals[i]
             counterTotal = self.counterTotals[i]
 
             # loop through actual mazes and time the solution.
-            for maze in mazeList:
-                # print(maze)
+            for maze in mazeList:                
                 result: (Timer, Counter) = sa.solve(maze)
                 timerTotal.addTimeToMazeSolutionTimesList(
                     result[0].GetTimer())
@@ -193,7 +205,11 @@ class Model(object):
         if self.outputfile is not None:
             if self._fileFacade is None:
                 self._fileFacade = FileFacade.getInstance()
-            self._fileFacade.write(self.mazes, self.outputfile, self.sizes)
+            if (len(self.mazes) > 0):
+                self._fileFacade.write(self.mazes, self.outputfile, self.sizes)
+            else:
+                raise Exception(
+                    "No generated mazes to write to file. Try generating mazes first.")
 
     def showGraphs(self):
         """Calls plotting lib for showing graphs of maze solving times and iterations."""
@@ -211,17 +227,18 @@ class Model(object):
         minTime = []
         avgTime = []
         maxTime = []
-
+        
         for i, j in enumerate(self.sizes):
-            timerTotal = self.timerTotals[i]
+            timerTotal = self.timerTotals[i]            
             minTime.append(timerTotal.getMinimumTimeForMazeSolutionTimes())
             avgTime.append(timerTotal.getAverageTimeForMazeSolutionTimes())
             maxTime.append(timerTotal.getMaximumTimeForMazeSolutionTimes())
-
+        
         return (minTime, avgTime, maxTime)
 
     def plottingIterationValues(self) -> (list, list, list):
         """Calculates min, avg and max iterations for each maze size."""
+
         minIterations = []
         avgIterations = []
         maxIterations = []

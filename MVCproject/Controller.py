@@ -12,7 +12,7 @@ from Interfaces import ISolveAlgorithm
 from DepthFirst import DepthFirst
 from FileFacade import FileFacade
 from Plotting import Plotting
-
+from View import View
 from Model import Model
 
 
@@ -32,19 +32,20 @@ class Controller(object):
     fileHandler = FileFacade()
 
     @staticmethod
-    def getInstance():
+    def getInstance(view, model):
         # is instance reference None, call constructor.
         if Controller.__instance is None:
-            Controller()
+            Controller(view, model)
         # return the instance
         return Controller.__instance
 
     # constructor - composition of model, view (dependency injection)
-    # def __init__(self, model, view):
-    def __init__(self):
-        pass
-        # self.model = model
-        # self.view = view
+    def __init__(self, view, model):
+        self.model = model
+        self.view = view
+        # observe state changes in the view.
+        self.view.attach(self)
+
         self.usage = "Controller usage"
         # Virtually private constructor.
         if Controller.__instance is not None:
@@ -52,7 +53,114 @@ class Controller(object):
         else:
             Controller.__instance = self
 
-    def runProgram(self, arguments):
+    def runProgram(self):
+        # Start the view's menu and listen for changes.
+        self.view.menu()
+
+    def update(self, verbose=False) -> str:
+        """
+        This method is called whenever e.g. state has changed in the object this Controller observes.
+        The Controller interprets the new state and handles it by use of its model.
+        """
+        if (self.view.state == self.view.SELECT_ALGORITHM):
+            if (verbose):
+                print("Setting up selected algorithm for solving to " + self.view.data)
+            return self.model.setSolveAlgorithm(self.view.data)
+
+        if (self.view.state == self.view.READ_FROM_FILE):
+            if (verbose):
+                print("Reading from " + self.view.data)
+            self.model.inputfile = self.view.data
+
+            # catch any low-level exceptions here and translate into user friendly error msg.:
+            try:
+                self.model.readFile()
+                return self.model.inputfile + " was successfully read."
+            except BaseException as e:
+                return self.model.inputfile + " could not be read: " + str(e)
+
+        if (self.view.state == self.view.WRITE_TO_FILE):
+            if (verbose):
+                print("Writing to file: " + self.view.data)
+            self.model.outputfile = self.view.data
+            # catch any low-level exceptions here and translate into user friendly error msg.:
+            try:
+                self.model.writeFile()
+                return self.model.outputfile + " was successfully written."
+            except BaseException as e:
+                return self.model.outputfile + " could not be written: " + str(e)
+
+        if (self.view.state == self.view.ADD_MAZE_SIZE):
+            if (verbose):
+                print("Adding size: " + self.view.data)
+
+            # copy current sizes prior to clearing collections.
+            currentSizes = self.model.sizes.copy() if self.model.sizes is not None else list()
+
+            # clear previous collections in model.
+            self.model.clearMazeSizes()
+
+            # split input array
+            input = map(lambda x: int(x), self.view.data.split(','))
+            # remove any new values already in current values.
+            newSizes = list(filter(lambda x: int(
+                x) not in currentSizes, input))
+
+            allsizes = currentSizes + newSizes
+            allsizes.sort()
+            # store current and new values in model.
+            for size in allsizes:
+                self.model.addMazeSize(int(size))
+            return "The following maze sizes are stored: " + str(self.model.sizes)
+
+        if (self.view.state == self.view.SHOW_MAZE_SIZES):
+            if (verbose):
+                print("Showing maze sizes...")
+            return "The following maze sizes are stored: " + str(self.model.sizes)
+
+        if (self.view.state == self.view.CLEAR_MAZE_SIZES):
+            if (verbose):
+                print("clearing maze sizes...")
+            self.model.clearMazeSizes()
+            return "Maze sizes cleared: " + str(self.model.sizes)
+
+        if (self.view.state == self.view.GENERATE_MAZES):
+            if (verbose):
+                print("Generating mazes...")
+            try:
+                self.model.generateMazes()
+                return str(len(self.model.sizes) * 10) + " mazes generated."
+            except BaseException as e:
+                return "Mazes could not be generated: " + str(e)
+
+        if (self.view.state == self.view.SOLVE_MAZES):
+            if (verbose):
+                print("Solving mazes...")
+            try:
+                self.model.solveMazes()
+                return "Mazes are solved, select 'Show graphs' to see resulting graphs."
+            except BaseException as e:
+                return "Mazes could not be solved: " + str(e)
+
+        if (self.view.state == self.view.SHOW_GRAPHS):
+            if (verbose):
+                print("Showing graphs...")
+            try:
+                timeTuple = self.model.plottingTimeValues()
+                iterationsTuple = self.model.plottingIterationValues()
+
+                # mazesize, timeMin, timeMax, timeAvg, iterationsMin, iterationsMax, iterationsAvg
+                plotting = Plotting(self.model.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
+                                    iterationsTuple[0], iterationsTuple[2], iterationsTuple[1])
+
+                plotting.plotting()
+
+                return "Graphs are showing in an external window."
+
+            except BaseException as e:
+                return "Graphs could not be generated: " + str(e)
+
+    def runProgram2(self, arguments):
         # Pseudo code:
         # 1. check arguments
         # 2. set values on model facade
@@ -86,167 +194,10 @@ class Controller(object):
             print(result)
             exit(1)
 
-    #     # run only if arguments are valid
-    #     if self.checkArguments(arguments):
-
-    #         # if input file is given
-    #         if self.inputfile is not None:
-    #             # read in file
-    #             print("Reading mazes from {}.".format(self.inputfile))
-    #             # todo self.mazes = FileFacade.read(self.inputfile)
-
-    #             # solve using selected algorithm.
-    #             # todo view.showResults(self.solveMazes())
-
-    #         else:
-    #             # clear relevant arrays if previously filled.
-    #             self.mazes.clear()
-    #             self.timerTotals.clear()
-    #             self.counterTotals.clear()
-
-    #             for s in self.sizes:
-    #                 # create counter and timertotal for current maze size.
-    #                 self.timerTotals.append(TimerTotal())
-    #                 self.counterTotals.append(CounterTotal())
-
-    #                 # create 10 mazes of each given size, store in array.
-    #                 mazeSubList = list()
-
-    #                 # create 10 mazes of current size.
-    #                 for x in range(10):
-    #                     mazeSubList.insert(x, Maze(s))
-
-    #                 # store sublist in mazes.
-    #                 self.mazes.append(mazeSubList)
-
-    #             # if output file is given, write file with mazes.
-    #             if self.outputfile is not None:
-    #                 print("Writing mazes to file...")
-    #                 writer = FileFacade()
-    #                 writer.createWriter(self.mazes, self.outputfile)
-
-    #         # solve using selected algorithm.
-    #         self.solveMazes()
-    #         # todo call view with needed info
-    #         for i, timerTotal in enumerate(self.timerTotals):
-    #             print("{}".format(i), str(
-    #                 timerTotal.getAverageTimeForMazeSolutionTimes()), str(timerTotal))
-
-    #         for i, counterTotal in enumerate(self.counterTotals):
-    #             print("{}".format(i), str(
-    #                 counterTotal.getAverageCounterForMazeSolutionCounters()), str(counterTotal))
-
-    #         timeTuple = self.plottingTimeValues()
-    #         iterationsTuple = self.plottingIterationValues()
-
-    #         # mazesize, timeMin, timeMax, timeAvg, iterationsMin, iterationsMax, iterationsAvg
-    #         plotting = Plotting(self.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
-    #                             iterationsTuple[0], iterationsTuple[2], iterationsTuple[1])
-
-    #         plotting.plottingTime()
-    #         plotting.plottingIterations()
-    #     else:
-    #         sys.exit()
-
-    # # Checks arguments and sets up globals.
-    # # If values are invalid, an error message is displayed.
-
-    # def checkArguments(self, arguments):
-    #     try:
-    #         opts, args = getopt.getopt(
-    #             arguments, "hs:i:o:", ["alg-generate", "alg-solve"])
-    #     except getopt.GetoptError as err:
-    #         print(err.msg + "\n" + self.usage)
-    #         return False
-
-    #     for opt, arg in opts:
-    #         if opt == '-h':  # help
-    #             print(self.usage)
-    #             sys.exit(0)
-    #         elif opt == '-s':  # maze sizes
-    #             # try to split arg into array.
-    #             argArray = arg.split(',')
-    #             # convert to ints and append to sizes.
-    #             for s in argArray:
-    #                 self.sizes.append(int(s))
-    #             # if int(arg) not in self.sizes:
-    #             #   print("Requested size not valid.")
-    #             if len(self.sizes) <= 0:
-    #                 print("Requested sizes are not valid.")
-    #                 return False
-    #             # else:
-    #             #     self.size = int(arg)
-    #         elif opt == '-i':  # input file
-    #             self.inputfile = arg
-    #         elif opt == '-o':  # output file
-    #             self.outputfile = arg
-    #         elif opt == '--alg-solve':
-    #             if arg in self.solveAlgorithms:
-    #                 self.solveAlgorithm = arg
-    #             else:
-    #                 self.solveAlgorithm = self.solveAlgorithms[0]
-
-    #     return True
-
-    # # helper method that solves mazes with selected algorithm and returns a tuple with lists of total time and steps.
-    # def solveMazes(self):
-
-    #     # set up instance of solving algorithm.
-    #     if self.solveAlgorithm == "dfs":
-    #         sa: ISolveAlgorithm = DepthFirst()
-    #     else:
-    #         raise NotImplementedError
-
-    #     # loop through outer maze container collection.
-    #     for i, mazeList in enumerate(self.mazes):
-
-    #         # get corresponding TimerTotal and Counter objects.
-    #         timerTotal = self.timerTotals[i]
-
-    #         counterTotal = self.counterTotals[i]
-    #         counter = Counter()
-    #         # loop through actual mazes and time the solution.
-    #         for maze in mazeList:
-    #             timer = Timer()
-    #             timer.StartTimer()
-    #             sa.solve(maze, counter)
-    #             timer.EndTimer()
-
-    #             timerTotal.addTimeToMazeSolutionTimesList(timer.GetTimer())
-    #             counterTotal.addCounterToMazeSolutionCountersList(
-    #                 counter.GetNumberOfPointsVisited())
-
-    # def plottingTimeValues(self) -> (list, list, list):
-    #     minTime = []
-    #     avgTime = []
-    #     maxTime = []
-
-    #     for i, j in enumerate(self.sizes):
-    #         timerTotal = self.timerTotals[i]
-    #         minTime.append(timerTotal.getMinimumTimeForMazeSolutionTimes())
-    #         avgTime.append(timerTotal.getAverageTimeForMazeSolutionTimes())
-    #         maxTime.append(timerTotal.getMaximumTimeForMazeSolutionTimes())
-
-    #     return (minTime, avgTime, maxTime)
-
-    # def plottingIterationValues(self) -> (list, list, list):
-    #     minIterations = []
-    #     avgIterations = []
-    #     maxIterations = []
-
-    #     for i, j in enumerate(self.sizes):
-    #         counterTotal = self.counterTotals[i]
-    #         minIterations.append(
-    #             counterTotal.getMinimumCounterForMazeSolutionCounters())
-    #         avgIterations.append(
-    #             counterTotal.getAverageCounterForMazeSolutionCounters())
-    #         maxIterations.append(
-    #             counterTotal.getMaximumCounterForMazeSolutionCounters())
-
-    #     return (minIterations, avgIterations, maxIterations)
-
 
 if __name__ == '__main__':
-    # print(sys.argv[1:])
-    c = Controller.getInstance()
-    c.runProgram(sys.argv[1:])
+    view = View()
+    model = Model.getInstance()
+    c = Controller.getInstance(view, model)
+    c.runProgram()
+    # c.runProgram2(sys.argv[1:])
