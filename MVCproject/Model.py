@@ -60,11 +60,6 @@ class Model(object):
 
         self.count = 0
 
-        #self.SIZES_INPUT = "sizesInput"
-        #self.SIZES_INPUT_TO_FILE = "sizesInputTofile"
-        #self.SIZES_INPUTFILE = "sizesInputfile"
-        #self.MAZES_SOLVE = "mazesSolve"
-        #self.MAZES_PLOTTING = "mazesPlotting"
         self.MAZES_GENERATED = "mazesGenerated"
         self.MAZES_SOLVED = "mazesSolved"
 
@@ -105,7 +100,7 @@ class Model(object):
 
     def notify(self):
         for observer in self.observers:
-            observer.update()
+            observer()
 
     def setup(self, arguments):
         """Checks validity and presence of arguments and sets up the model."""
@@ -161,8 +156,6 @@ class Model(object):
             self.mazes = result[0]  # the array of all mazes.
             self.sizes = result[1]  # the sizes read in from file.
             self.makeDictionaryForMazeTimerAndCounter()
-        #self.setState(self.MAZES_GENERATED)
-        #self.notify()
 
     def generateMazes(self):
         self.count = 0
@@ -179,10 +172,7 @@ class Model(object):
                 self.onEvent()
                 self.mutex.release()
                 s.release()
-        if self.count == (len(self.sizes) * 10):
-            print("All mazes are generated")
-            self.setState(self.MAZES_GENERATED)
-            self.notify()
+        self.checkGeneratedOrSolved(self.MAZES_GENERATED, "All mazes are generated")
 
     def solveMazes(self):
         """Solves mazes using selected solving algorithm."""
@@ -204,10 +194,13 @@ class Model(object):
                 self.onEvent()
                 self.mutex.release()
                 s.release()
+        self.checkGeneratedOrSolved(self.MAZES_SOLVED, "All mazes are solved")     
+
+    def checkGeneratedOrSolved(self, state, text):
         if self.count == (len(self.sizes) * 10):
-            print("All mazes are solved")
-            self.setState(self.MAZES_SOLVED)
-            self.notify()                
+            print(text)
+            self.setState(state)
+            self.notify()          
 
     def writeFile(self):
         """Writes mazes to file if output file is set up."""
@@ -215,15 +208,11 @@ class Model(object):
             if self._fileFacade is None:
                 self._fileFacade = FileFacade.getInstance()
             self._fileFacade.write(self.mazes, self.outputfile, self.sizes)
-        #self.setState(self.MAZES_SOLVE)
-        #self.notify()
 
     def showGraphs(self):
         """Calls plotting lib for showing graphs of maze solving times and iterations."""
         plotting = Plotting(self.makeDictionaryWithListToPlotting())
         plotting.plotting()
-        #self.setState(None)
-        #self.notify()
 
     def makeListToPlotting(self) -> (list, list, list, list, list, list, list):
         sizes = self.sizes

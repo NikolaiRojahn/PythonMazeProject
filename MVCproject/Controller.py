@@ -30,7 +30,8 @@ class Controller(object):
     # constructor - composition of model, view (dependency injection)
     def __init__(self, model):
         self.model = model
-        self.model.attach(self)
+        self.model.attach(self.onMazesGenerated)
+        self.model.attach(self.onMazesSolved)
 
         self.state = None
 
@@ -61,10 +62,6 @@ class Controller(object):
         else:
             print(result)
             exit(1)
-
-    def update(self):
-        self.onMazesGenerated()
-        self.onMazesSolved()
 
     def onMazesGenerated(self):
         self.state = self.model.getState()
