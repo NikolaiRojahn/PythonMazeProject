@@ -1,21 +1,13 @@
-class View(object):
+from Interfaces import IView
+
+
+class View(IView):
 
     def __init__(self):
         self.observers = list()
         self.choiceSelected = None
         self._state = "stateStr"
         self._data = "dataStr"
-        # String "constants" for view's state, can be reassigned, just don't do it!
-        # dictionary
-        self.SELECT_ALGORITHM = "selectAlgorithm"
-        self.READ_FROM_FILE = "readFromFile"
-        self.WRITE_TO_FILE = "writeToFile"
-        self.ADD_MAZE_SIZE = "addMazeSize"
-        self.SHOW_MAZE_SIZES = "showMazeSizes"
-        self.CLEAR_MAZE_SIZES = "clearMazeSizes"
-        self.GENERATE_MAZES = "generateMazes"
-        self.SOLVE_MAZES = "solveMazes"
-        self.SHOW_GRAPHS = "showGraphs"
 
         self.choices = {
             # each entry in the map has a string for the
@@ -43,50 +35,53 @@ class View(object):
     def attach(self, observer):
         self.observers.append(observer)
 
+    def getState(self) -> str:
+        return self.state
+
     def selectAlgorithm(self):
         # prompt for algorithm.
         self._data = input(
             "Type algorithm code: ")
-        self._state = self.SELECT_ALGORITHM
+        self._state = View.SELECT_ALGORITHM
 
         self.notify()
 
     def readFromFile(self):
         # prompt for filename.
         self._data = input("Type filename: ")
-        self._state = self.READ_FROM_FILE
+        self._state = View.READ_FROM_FILE
         self.notify()
 
     def writeToFile(self):
         self._data = input("Type filename: ")
-        self._state = self.WRITE_TO_FILE
+        self._state = View.WRITE_TO_FILE
         self.notify()
 
     def addMazeSizes(self):
         self._data = input("Type maze sizes separated with commas: ")
-        self._state = self.ADD_MAZE_SIZE
+        self._state = View.ADD_MAZE_SIZE
         self.notify()
 
     def showMazeSizes(self):
         self._data = ""
-        self._state = self.SHOW_MAZE_SIZES
+        self._state = View.SHOW_MAZE_SIZES
         self.notify()
 
     def clearMazeSizes(self):
         self._data = ""
-        self._state = self.CLEAR_MAZE_SIZES
+        self._state = View.CLEAR_MAZE_SIZES
         self.notify()
 
     def generateMazes(self):
-        self._state = self.GENERATE_MAZES
+        self._state = View.GENERATE_MAZES
         self.notify()
 
     def solveMazes(self):
-        self._state = self.SOLVE_MAZES
+        self._state = View.SOLVE_MAZES
         self.notify()
 
     def showGraphs(self):
-        self._state = self.SHOW_GRAPHS
+        self._state = View.SHOW_GRAPHS
         self.notify()
 
     def notify(self):
@@ -94,7 +89,7 @@ class View(object):
             # Q&D just print result of observer.update - we might have more observers in this pattern but not here.
             print(observer.update())
 
-    def menu(self):
+    def start(self):
         """ Prints a menu of strings in self.choices, reads user input and stores it in self.selection. """
         while(self.choiceSelected != 0):
             if self.choiceSelected is not None:
