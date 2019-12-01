@@ -64,13 +64,14 @@ class Controller(object):
         """
         if (self.view.getState() == self.view.SELECT_ALGORITHM):
             if (verbose):
-                print("Setting up selected algorithm for solving to " + self.view.getData())
-            return self.model.setSolveAlgorithm(self.view.getData())
+                print("Setting up selected algorithm for solving to " +
+                      self.view.getAlgorithm())
+            return self.model.setSolveAlgorithm(self.view.getAlgorithm())
 
         if (self.view.getState() == self.view.READ_FROM_FILE):
             if (verbose):
-                print("Reading from " + self.view.getData())
-            self.model.inputfile = self.view.getData()
+                print("Reading from " + self.view.getFilename())
+            self.model.inputfile = self.view.getFilename()
 
             # catch any low-level exceptions here and translate into user friendly error msg.:
             try:
@@ -81,8 +82,8 @@ class Controller(object):
 
         if (self.view.getState() == self.view.WRITE_TO_FILE):
             if (verbose):
-                print("Writing to file: " + self.view.getData())
-            self.model.outputfile = self.view.getData()
+                print("Writing to file: " + self.view.getFilename())
+            self.model.outputfile = self.view.getFilename()
             # catch any low-level exceptions here and translate into user friendly error msg.:
             try:
                 self.model.writeFile()
@@ -92,7 +93,7 @@ class Controller(object):
 
         if (self.view.getState() == self.view.ADD_MAZE_SIZE):
             if (verbose):
-                print("Adding size: " + self.view.getData())
+                print("Adding size: " + self.view.getSizes())
 
             # copy current sizes prior to clearing collections.
             currentSizes = self.model.sizes.copy() if self.model.sizes is not None else list()
@@ -101,7 +102,7 @@ class Controller(object):
             self.model.clearMazeSizes()
 
             # split input array
-            input = map(lambda x: int(x), self.view.getData().split(','))
+            input = map(lambda x: int(x), self.view.getSizes().split(','))
             # remove any new values already in current values.
             newSizes = list(filter(lambda x: int(
                 x) not in currentSizes, input))

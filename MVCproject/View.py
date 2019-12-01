@@ -38,8 +38,17 @@ class View(IView):
     def getState(self) -> str:
         return self.state
 
-    def getData(self):
+    def getAlgorithm(self) -> str:
         return self.data
+
+    def getFilename(self) -> str:
+        return self.data
+
+    def getSizes(self):
+        return self.data
+
+    # def getData(self):
+    #     return self.data
 
     def selectAlgorithm(self):
         # prompt for algorithm.
