@@ -147,6 +147,8 @@ class Controller(object):
                 #plotting = Plotting(self.model.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
                 #                    iterationsTuple[0], iterationsTuple[2], iterationsTuple[1])
 
+                print(self.model.makeDictionaryWithListToPlotting())
+                
                 plotting = Plotting(self.model.makeDictionaryWithListToPlotting())
 
                 plotting.plotting()

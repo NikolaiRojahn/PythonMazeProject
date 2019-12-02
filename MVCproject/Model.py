@@ -252,6 +252,7 @@ class Model(object):
 
     def showGraphs(self):
         """Calls plotting lib for showing graphs of maze solving times and iterations."""
+        print(self.makeDictionaryWithListToPlotting())
         plotting = Plotting(self.makeDictionaryWithListToPlotting())
         plotting.plotting()
 
@@ -296,6 +297,7 @@ class Model(object):
         return plottingDict
 
     def makeDictionaryForMazeTimerAndCounter(self):
+        self.mazeOptions.clear()
         for size in self.sizes:
             if size not in self.mazeOptions:
                 self.mazeOptions[size] = [TimerTotal(), CounterTotal()]
