@@ -12,23 +12,17 @@ from Interfaces import ISolveAlgorithm
 from DepthFirst import DepthFirst
 from FileFacade import FileFacade
 from Plotting import Plotting
+from Threadpool import ThreadPool
+from threading import Thread, Lock, BoundedSemaphore
+import threading
 import getopt
+import time
 
 
 class Model(object):
 
     # static variables.
-    # mazes: list = list()
-    # sizes: list = list()
-    # timerTotals: list = list()
-    # counterTotals: list = list()
-
-    # solveAlgorithm = "dfs"
-    # solveAlgorithms = ["dfs"]
-
-    # inputfile = None
-    # outputfile = None
-    # generatedMazes = None
+    mutex = Lock()
     __instance = None
     usage = 'Controller.py -s size1,size2,...,sizeN --alg-solve=<name> [-i <inputfile> -o <outputfile>]'
 
@@ -49,19 +43,26 @@ class Model(object):
         else:  # no instance yet, store self as instance.
             Model.__instance = self
 
-            # set up instance variables.
-            self.mazes: list = list()
-            self.sizes: list = list()
-            self.timerTotals: list = list()
-            self.counterTotals: list = list()
+        # set up instance variables.
+        self.mazes: list = list()
+        self.sizes: list = list()
+        self.observers: list = list()
+        self.mazeOptions = {}
 
-            self.solveAlgorithm = "dfs"
-            self.solveAlgorithms = ["dfs"]
+        self.solveAlgorithm = "dfs"
+        self.solveAlgorithms = ["dfs"]
 
-            self._inputfile = None
-            self._outputfile = None
-            self._fileFacade = None
-            self.generatedMazes = None
+        self._inputfile = None
+        self._outputfile = None
+        self._fileFacade = None
+        self.generatedMazes = None
+
+        self.state = None
+
+        self.count = 0
+
+        self.MAZES_GENERATED = "mazesGenerated"
+        self.MAZES_SOLVED = "mazesSolved"
 
     # inputfile getter
     @property
@@ -81,6 +82,27 @@ class Model(object):
     def outputfile(self, value: str):
         self._outputfile = value
 
+    # @property
+    def getState(self):
+        return self.state
+
+    # @property
+    def setState(self, value):
+        self.state = value
+
+    def attach(self, observer):
+        self.observers.append(observer)
+
+    def detach(self, observer):
+        self.observers.remove(observer)
+
+    def onEvent(self):
+        self.count += 1
+
+    def notify(self):
+        for observer in self.observers:
+            observer()
+
     def setup(self, arguments):
         """Checks validity and presence of arguments and sets up the model."""
         result = True  # return value presuming all is ok.
@@ -92,18 +114,17 @@ class Model(object):
             result = err.msg + "\n" + self.usage
 
         for opt, arg in opts:
-
             print("opt: " + opt + ", arg: " + arg)
             if opt == '-h':  # help
                 result = self.usage
             elif opt == '-s':  # maze sizes
                 # try to split arg into array.
                 argArray = arg.split(',')
+                if argArray[0][:1] == '-':
+                    result = "Requested sizes are not valid."
                 # convert to ints and append to sizes.
                 for s in argArray:
                     self.addMazeSize(int(s))
-                if len(self.sizes) <= 0:
-                    result = "Requested sizes are not valid."
             elif opt == '-i':  # input file
                 self.inputfile = arg
             elif opt == '-o':  # output file
@@ -150,13 +171,7 @@ class Model(object):
             self.clearMazeSizes()
             self.mazes = result[0]  # the array of all mazes.
             self.sizes = result[1]  # the sizes read in from file.
-
-            # print(self.mazes)
-
-            # add counters and timers to collections, needed for calculating averages for plotting.
-            for size in self.sizes:
-                self.timerTotals.append(TimerTotal())
-                self.counterTotals.append(CounterTotal())
+            self.makeDictionaryForMazeTimerAndCounter()
 
     def generateMazes(self):
         """Generates mazes if sizes are set up."""
@@ -164,18 +179,26 @@ class Model(object):
             raise Exception("No maze sizes in system. Try adding sizes first.")
 
         # self.mazes.clear()
+        self.count = 0
+        s = threading.BoundedSemaphore(3)
+        self.makeDictionaryForMazeTimerAndCounter()
         for size in self.sizes:
-            # create 10 mazes of each given size, store in placeholder array.
             mazeSubList = list()
-            for x in range(10):
-                mazeSubList.insert(x, Maze(size))
-
-            # store sublist in mazes.
             self.mazes.append(mazeSubList)
+            for i in range(10):
+                s.acquire()
+                obj = Maze(size)
+                self.mutex.acquire()
+                mazeSubList.append(obj)
+                self.onEvent()
+                self.mutex.release()
+                s.release()
+        self.checkGeneratedOrSolved(
+            self.MAZES_GENERATED, "All mazes are generated")
 
     def solveMazes(self):
         """Solves mazes using selected solving algorithm."""
-        # set up instance of solving algorithm.        
+        # set up instance of solving algorithm.
         sa: ISolveAlgorithm = None
         if self.solveAlgorithm == "dfs":
             sa: ISolveAlgorithm = DepthFirst()
@@ -186,19 +209,35 @@ class Model(object):
             raise Exception(
                 "No generated mazes in system. Try generating mazes first.")
 
-        # loop through outer maze container collection.        
-        for i, mazeList in enumerate(self.mazes):
-            # get corresponding TimerTotal and Counter objects.
-            timerTotal = self.timerTotals[i]
-            counterTotal = self.counterTotals[i]
+        # # loop through outer maze container collection.
+        # for i, mazeList in enumerate(self.mazes):
+        #     # get corresponding TimerTotal and Counter objects.
+        #     timerTotal = self.timerTotals[i]
+        #     counterTotal = self.counterTotals[i]
 
-            # loop through actual mazes and time the solution.
-            for maze in mazeList:                
+        #     # loop through actual mazes and time the solution.
+        #     for maze in mazeList:
+        self.count = 0
+        s = threading.BoundedSemaphore(3)
+        for mazeList in self.mazes:
+            for maze in mazeList:
+                s.acquire()
                 result: (Timer, Counter) = sa.solve(maze)
-                timerTotal.addTimeToMazeSolutionTimesList(
+                self.mutex.acquire()
+                self.mazeOptions[maze.size][0].addTimeToMazeSolutionTimesList(
                     result[0].GetTimer())
-                counterTotal.addCounterToMazeSolutionCountersList(
+                self.mazeOptions[maze.size][1].addCounterToMazeSolutionCountersList(
                     result[1].GetNumberOfPointsVisited())
+                self.onEvent()
+                self.mutex.release()
+                s.release()
+        self.checkGeneratedOrSolved(self.MAZES_SOLVED, "All mazes are solved")
+
+    def checkGeneratedOrSolved(self, state, text):
+        if self.count == (len(self.sizes) * 10):
+            print(text)
+            self.setState(state)
+            self.notify()
 
     def writeFile(self):
         """Writes mazes to file if output file is set up."""
@@ -213,43 +252,50 @@ class Model(object):
 
     def showGraphs(self):
         """Calls plotting lib for showing graphs of maze solving times and iterations."""
-        timeTuple = self.plottingTimeValues()
-        iterationsTuple = self.plottingIterationValues()
-
-        # mazesize, timeMin, timeMax, timeAvg, iterationsMin, iterationsMax, iterationsAvg
-        plotting = Plotting(self.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
-                            iterationsTuple[0], iterationsTuple[2], iterationsTuple[1])
-
+        plotting = Plotting(self.makeDictionaryWithListToPlotting())
         plotting.plotting()
 
-    def plottingTimeValues(self) -> (list, list, list):
-        """Calculates min, avg and max times for each maze size."""
-        minTime = []
-        avgTime = []
-        maxTime = []
-        
-        for i, j in enumerate(self.sizes):
-            timerTotal = self.timerTotals[i]            
-            minTime.append(timerTotal.getMinimumTimeForMazeSolutionTimes())
-            avgTime.append(timerTotal.getAverageTimeForMazeSolutionTimes())
-            maxTime.append(timerTotal.getMaximumTimeForMazeSolutionTimes())
-        
-        return (minTime, avgTime, maxTime)
+    def makeListToPlotting(self) -> (list, list, list, list, list, list, list):
+        sizes = self.sizes
+        minTime: list = list()
+        maxTime: list = list()
+        avgTime: list = list()
+        minIterations: list = list()
+        maxIterations: list = list()
+        avgIterations: list = list()
 
-    def plottingIterationValues(self) -> (list, list, list):
-        """Calculates min, avg and max iterations for each maze size."""
-
-        minIterations = []
-        avgIterations = []
-        maxIterations = []
-
-        for i, j in enumerate(self.sizes):
-            counterTotal = self.counterTotals[i]
+        for k in self.mazeOptions:
+            minTime.append(
+                self.mazeOptions[k][0].getMinimumTimeForMazeSolutionTimes())
+            maxTime.append(
+                self.mazeOptions[k][0].getMaximumTimeForMazeSolutionTimes())
+            avgTime.append(
+                self.mazeOptions[k][0].getAverageTimeForMazeSolutionTimes())
             minIterations.append(
-                counterTotal.getMinimumCounterForMazeSolutionCounters())
-            avgIterations.append(
-                counterTotal.getAverageCounterForMazeSolutionCounters())
+                self.mazeOptions[k][1].getMinimumCounterForMazeSolutionCounters())
             maxIterations.append(
-                counterTotal.getMaximumCounterForMazeSolutionCounters())
+                self.mazeOptions[k][1].getMaximumCounterForMazeSolutionCounters())
+            avgIterations.append(
+                self.mazeOptions[k][1].getAverageCounterForMazeSolutionCounters())
 
-        return (minIterations, avgIterations, maxIterations)
+        return (sizes, minTime, maxTime, avgTime, minIterations, maxIterations, avgIterations)
+
+    def makeDictionaryWithListToPlotting(self) -> {}:
+        plottingDict = {}
+
+        result = self.makeListToPlotting()
+
+        plottingDict["sizes"] = result[0]
+        plottingDict["minTime"] = result[1]
+        plottingDict["maxTime"] = result[2]
+        plottingDict["avgTime"] = result[3]
+        plottingDict["minIterations"] = result[4]
+        plottingDict["maxIterations"] = result[5]
+        plottingDict["avgIterations"] = result[6]
+
+        return plottingDict
+
+    def makeDictionaryForMazeTimerAndCounter(self):
+        for size in self.sizes:
+            if size not in self.mazeOptions:
+                self.mazeOptions[size] = [TimerTotal(), CounterTotal()]

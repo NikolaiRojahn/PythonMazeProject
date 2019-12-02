@@ -8,12 +8,8 @@ class DepthFirst(ISolveAlgorithm):
 
     def __init__(self):
         pass
-    # def __init__(self, Maze, Counter):
-    #     self.maze = Maze
-    #     self.counter = Counter
 
     # implement ISolveAlgorithm.
-    # def solve(self, maze, counter) -> Timer:
     def solve(self, maze: Maze) -> (Timer, Counter):
         """Solves a maze and counts iterations and time consumption."""
         counter = Counter()

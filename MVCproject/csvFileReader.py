@@ -4,7 +4,7 @@ from Maze import Maze
 
 class csvFileReader:
 
-    sizes: list = None
+    sizes: list = list()
 
     @staticmethod
     def getSizes():
@@ -17,23 +17,24 @@ class csvFileReader:
         mazesSingleSize = []
     
         with open(fileName) as f:
+            a = 0
             reader = csv.reader(f, delimiter=',')
             maze = []
             for row in reader:
-                if(csvFileReader.sizes is not None):
-                    if(row == seperator):
-                        objMaze = Maze(None, maze.copy())
+                if len(csvFileReader.sizes) != 0:
+                    if row == seperator:
+                        objMaze = Maze(csvFileReader.sizes[a], maze.copy())
                         mazesSingleSize.append(objMaze)
                         maze.clear()
-                    elif(row == seperatorNewSize):
+                    elif row == seperatorNewSize:
                         mazesAllSizes.append(mazesSingleSize.copy())
                         mazesSingleSize.clear()
+                        a += 1
                     else:
                         for i in range(0, len(row)):
                             row[i] = int(row[i])
                         maze.append(row)
                 else:
-                    csvFileReader.sizes = row
-            # print("MAZE FROM READER!!!!!!!!!!!!!!!!!!")
-            # print(mazesAllSizes[0][0].convertedMaze)
+                    for b in range(0, len(row)):
+                        csvFileReader.sizes.append(int(row[b]))
         return mazesAllSizes

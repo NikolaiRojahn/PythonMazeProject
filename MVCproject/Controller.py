@@ -18,18 +18,7 @@ from Model import Model
 
 class Controller(object):
     # static variables.
-    mazes: list = list()
-    sizes: list = list()
-    timerTotals: list = list()
-    counterTotals: list = list()
-    solveAlgorithms = ["dfs"]
-
-    inputfile = None
-    outputfile = None
-    solveAlgorithm = None
-    generatedMazes = None
     __instance = None
-    fileHandler = FileFacade()
 
     @staticmethod
     def getInstance(view: IView, model):
@@ -45,6 +34,10 @@ class Controller(object):
         self.view = view
         # observe state changes in the view.
         self.view.attach(self)
+        self.model.attach(self.onMazesGenerated)
+        self.model.attach(self.onMazesSolved)
+
+        self.state = None
 
         self.usage = "Controller usage"
         # Virtually private constructor.
@@ -178,22 +171,34 @@ class Controller(object):
         result = model.setup(arguments)
 
         if(result is True):
-            # 3. read from file
-            if model.inputfile is not None:
-                model.readFile()
-            # 4. generate mazes
-            if model.inputfile is None:
-                model.generateMazes()
-            # 5. write mazes to file
-            if model.outputfile is not None:
-                model.writeFile()
-            # 6. solve mazes
-            model.solveMazes()
-            # 7. show graphs of solving mazes.
-            model.showGraphs()
+            if self.model.inputfile is not None:
+                self.model.readFile()
+                self.model.solveMazes()
+                if self.onMazesSolved() is True:
+                    self.model.showGraphs()
+            if self.model.inputfile is None:
+                self.model.generateMazes()
+                if self.onMazesGenerated() is True:
+                    if self.model.outputfile is not None:
+                        self.model.writeFile()
+                    self.model.solveMazes()
+                    if self.onMazesSolved() is True:
+                        self.model.showGraphs()
         else:
             print(result)
             exit(1)
+
+    def onMazesGenerated(self):
+        self.state = self.model.getState()
+        if (self.state == self.model.MAZES_GENERATED):
+            return True
+        return False
+
+    def onMazesSolved(self):
+        self.state = self.model.getState()
+        if (self.state == self.model.MAZES_SOLVED):
+            return True
+        return False
 
 
 if __name__ == '__main__':
