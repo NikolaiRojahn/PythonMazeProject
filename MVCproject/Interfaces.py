@@ -32,18 +32,17 @@ class IView(object):
     # attaches an observer to the view
     def attach(self, observer): raise NotImplementedError
     @abstractmethod
-    def getState(self) -> str: raise NotImplementedError  # returns the state.    
+    def getState(self) -> str: raise NotImplementedError  # returns the state.
     @abstractmethod
-    def getAlgorithm(self) -> str: raise NotImplementedError
-    @abstractmethod
-    def getFilename(self) -> str: raise NotImplementedError
-    @abstractmethod
-    def getSizes(self): raise NotImplementedError
+    # returns data from view to observer(controller)
+    def getData(self): raise NotImplementedError
 
     # @abstractmethod
-    # returns data from view to observer (controller)
-    # def getData(self): raise NotImplementedError
-
+    # def getAlgorithm(self) -> str: raise NotImplementedError
+    # @abstractmethod
+    # def getFilename(self) -> str: raise NotImplementedError
+    # @abstractmethod
+    # def getSizes(self): raise NotImplementedError
 
     # String "constants" for view's state, can be reassigned, just don't do it!
     SELECT_ALGORITHM = "selectAlgorithm"
@@ -55,4 +54,4 @@ class IView(object):
     GENERATE_MAZES = "generateMazes"
     SOLVE_MAZES = "solveMazes"
     SHOW_GRAPHS = "showGraphs"
-    GUI_SET = "guiSet"  # Only used in Gui - NOT CLI view !!!
+    # GUI_SET = "guiSet"  # Only used in Gui - NOT CLI view !!!
