@@ -1,5 +1,7 @@
 from random import shuffle
 
+import copy
+
 import sys
 # needed for DFS...
 sys.setrecursionlimit(10000)
@@ -7,7 +9,8 @@ sys.setrecursionlimit(10000)
 class Maze:
     maze = None
     convertedMaze = None
-    gridMaze = None
+    solvedMaze = None
+    #gridMaze = None
 
     # Q&D pseudo overload of constructor.
     def __init__(self, size=None, convertedMaze=None):
@@ -76,3 +79,6 @@ class Maze:
                 string += str(b)
             string += "\n"
         return string
+
+    def setSolvedMaze(self):
+        self.solvedMaze = copy.deepcopy(self.convertedMaze) #deepcopy fordi listen indeholder flere lister

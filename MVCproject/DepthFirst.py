@@ -15,6 +15,7 @@ class DepthFirst(ISolveAlgorithm):
         counter = Counter()
         timer = Timer()
         self.maze = maze
+        self.maze.setSolvedMaze()
 
         timer.StartTimer()
         self.__search(1, 1, counter)
@@ -23,15 +24,18 @@ class DepthFirst(ISolveAlgorithm):
 
     # private method that implements depth first solving algorithm.
     def __search(self, x, y, counter: Counter, verbose=False):
-        if self.maze.convertedMaze[x][y] == 2:
+        #if self.maze.convertedMaze[x][y] == 2:
+        if self.maze.solvedMaze[x][y] == 2:
             if verbose:
                 print("found at %d,%d" % (x, y))
             return True
-        elif self.maze.convertedMaze[x][y] == 1:
+        #elif self.maze.convertedMaze[x][y] == 1:
+        elif self.maze.solvedMaze[x][y] == 1:
             if verbose:
                 print('wall at %d,%d' % (x, y))
             return (False)
-        elif self.maze.convertedMaze[x][y] == 3:
+        #elif self.maze.convertedMaze[x][y] == 3:
+        elif self.maze.solvedMaze[x][y] == 3:
             counter.AddToCounterList('visited at %d,%d' % (x, y))
             if verbose:
                 print('visited at %d,%d' % (x, y))
@@ -39,11 +43,19 @@ class DepthFirst(ISolveAlgorithm):
         if verbose:
             print('visiting %d,%d' % (x, y))
         # mark as visited
-        self.maze.convertedMaze[x][y] = 3
+        #self.maze.convertedMaze[x][y] = 3
+        self.maze.solvedMaze[x][y] = 3
         # explore neighbors clockwise starting by the one on the right
-        if ((x < (len(self.maze.convertedMaze)-1) and self.__search(x+1, y, counter, verbose))
+        #if ((x < (len(self.maze.convertedMaze)-1) and self.__search(x+1, y, counter, verbose))
+        #    or (y > 0 and self.__search(x, y-1, counter, verbose))
+        #    or (x > 0 and self.__search(x-1, y, counter, verbose))
+        #        or (y < len(self.maze.convertedMaze)-1 and self.__search(x, y+1, counter, verbose))):
+        #    return True
+        #return False
+
+        if ((x < (len(self.maze.solvedMaze)-1) and self.__search(x+1, y, counter, verbose))
             or (y > 0 and self.__search(x, y-1, counter, verbose))
             or (x > 0 and self.__search(x-1, y, counter, verbose))
-                or (y < len(self.maze.convertedMaze)-1 and self.__search(x, y+1, counter, verbose))):
+                or (y < len(self.maze.solvedMaze)-1 and self.__search(x, y+1, counter, verbose))):
             return True
         return False
