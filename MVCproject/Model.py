@@ -137,15 +137,15 @@ class Model(object):
     def addMazeSize(self, size: int):
         """Adds a maze size, TimerTotal and CounterTotal objects to the collections."""
         self.sizes.append(abs(size))
-        self.timerTotals.append(TimerTotal())
-        self.counterTotals.append(CounterTotal())
+        #self.timerTotals.append(TimerTotal())
+        #self.counterTotals.append(CounterTotal())
 
     def clearMazeSizes(self):
         """Clears sizes, mazes, timerTotals and counterTotals in the model. """
         self.sizes.clear()
         self.mazes.clear()
-        self.timerTotals.clear()
-        self.counterTotals.clear()
+        #self.timerTotals.clear()
+        #self.counterTotals.clear()
 
     def setSolveAlgorithm(self, arg: str) -> str:
         """

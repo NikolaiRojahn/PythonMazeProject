@@ -140,12 +140,14 @@ class Controller(object):
             if (verbose):
                 print("Showing graphs...")
             try:
-                timeTuple = self.model.plottingTimeValues()
-                iterationsTuple = self.model.plottingIterationValues()
+                #timeTuple = self.model.plottingTimeValues()
+                #iterationsTuple = self.model.plottingIterationValues()
 
                 # mazesize, timeMin, timeMax, timeAvg, iterationsMin, iterationsMax, iterationsAvg
-                plotting = Plotting(self.model.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
-                                    iterationsTuple[0], iterationsTuple[2], iterationsTuple[1])
+                #plotting = Plotting(self.model.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
+                #                    iterationsTuple[0], iterationsTuple[2], iterationsTuple[1])
+
+                plotting = Plotting(self.model.makeDictionaryWithListToPlotting())
 
                 plotting.plotting()
 
