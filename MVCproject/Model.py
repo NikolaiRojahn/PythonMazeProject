@@ -252,7 +252,7 @@ class Model(object):
 
     def showGraphs(self):
         """Calls plotting lib for showing graphs of maze solving times and iterations."""
-        print(self.makeDictionaryWithListToPlotting())
+        #print(self.makeDictionaryWithListToPlotting())
         plotting = Plotting(self.makeDictionaryWithListToPlotting())
         plotting.plotting()
 
