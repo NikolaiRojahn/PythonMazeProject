@@ -1,3 +1,4 @@
+import Exceptions
 from Interfaces import IView
 
 
@@ -37,15 +38,6 @@ class View(IView):
 
     def getState(self) -> str:
         return self.state
-
-    # def getAlgorithm(self) -> str:
-    #     return self.data
-
-    # def getFilename(self) -> str:
-    #     return self.data
-
-    # def getSizes(self):
-    #     return self.data
 
     def getData(self):
         return self.data
@@ -98,8 +90,11 @@ class View(IView):
 
     def notify(self):
         for observer in self.observers:
-            # Q&D just print result of observer.update - we might have more observers in this pattern but not here.
-            print(observer.update())
+            # Q&D this view just prints result of observer update if no exception is thrown.
+            try:
+                print(observer.update())
+            except Exceptions.UserFriendlyException as e:
+                print(str(e))
 
     def start(self):
         """ Prints a menu of strings in self.choices, reads user input and stores it in self.selection. """
@@ -147,4 +142,4 @@ if __name__ == '__main__':
     print(view.state)
     print(view.data)
 
-    view.menu()
+    view.start()

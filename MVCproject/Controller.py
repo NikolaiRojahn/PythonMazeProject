@@ -1,5 +1,6 @@
 import sys
 import getopt
+import Exceptions
 from Maze import Maze
 from Counter import Counter
 from CounterTotal import CounterTotal
@@ -71,7 +72,9 @@ class Controller(object):
                 self.model.readFile()
                 return self.model.inputfile + " was successfully read."
             except BaseException as e:
-                return self.model.inputfile + " could not be read: " + str(e)
+                raise Exceptions.UserFriendlyException(
+                    self.model.inputfile + " could not be read: " + str(e))
+                # return self.model.inputfile + " could not be read: " + str(e)
 
         if (self.view.getState() == self.view.WRITE_TO_FILE):
             if (verbose):
@@ -82,7 +85,8 @@ class Controller(object):
                 self.model.writeFile()
                 return self.model.outputfile + " was successfully written."
             except BaseException as e:
-                return self.model.outputfile + " could not be written: " + str(e)
+                raise Exceptions.UserFriendlyException(
+                    self.model.outputfile + " could not be written: " + str(e))
 
         if (self.view.getState() == self.view.ADD_MAZE_SIZE):
             if (verbose):
@@ -125,7 +129,8 @@ class Controller(object):
                 self.model.generateMazes()
                 return str(len(self.model.sizes) * 10) + " mazes generated."
             except BaseException as e:
-                return "Mazes could not be generated: " + str(e)
+                raise Exceptions.UserFriendlyException(
+                    "Mazes could not be generated: " + str(e))
 
         if (self.view.getState() == self.view.SOLVE_MAZES):
             if (verbose):
@@ -134,7 +139,8 @@ class Controller(object):
                 self.model.solveMazes()
                 return "Mazes are solved, select 'Show graphs' to see resulting graphs."
             except BaseException as e:
-                return "Mazes could not be solved: " + str(e)
+                raise Exceptions.UserFriendlyException(
+                    "Mazes could not be solved: " + str(e))
 
         if (self.view.getState() == self.view.SHOW_GRAPHS):
             if (verbose):
@@ -152,7 +158,8 @@ class Controller(object):
                 return "Graphs are showing in an external window."
 
             except BaseException as e:
-                return "Graphs could not be generated: " + str(e)
+                raise Exceptions.UserFriendlyException(
+                    "Graphs could not be generated: " + str(e))
 
     def runProgram2(self, arguments):
         # Pseudo code:
