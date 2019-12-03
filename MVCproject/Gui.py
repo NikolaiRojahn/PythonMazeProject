@@ -1,7 +1,9 @@
 from tkinter import *
 from Interfaces import IView as view
+import Exceptions
 
 class GUI(view):
+    observers = list()
     chosenAlgorithm = "dfs"
     chosenFileJob = ""
     filename = ""
@@ -13,6 +15,25 @@ class GUI(view):
     def __init__(self, master):
         self.initTemplate(master)
 
+    #IView methods
+    def getData(self):
+        return self._data
+    
+    def getState(self):
+        return self._state
+
+    def attach(self, observer):
+        self.observers.append(observer)
+
+    def notify(self):
+        for observer in self.observers:
+            # Q&D this view just prints result of observer update if no exception is thrown.
+            try:
+                print(observer.update())
+            except Exceptions.UserFriendlyException as e:
+                print(str(e))
+
+
     #Method which updates the current chosen algorithm.
     def func(self, value):
         self.chosenAlgorithm = value
@@ -22,20 +43,35 @@ class GUI(view):
         if(self.checkForWrongInput()):
             self.handleSizesInput()
             self.setFileName()
-            
+
             #Handle _state and _data in order for the backend to fetch.
-            self._data = self.chosenAlgorithm
-            self._state = view.SELECT_ALGORITHM
+            self._data = self.sizes
+            self._state = self.ADD_MAZE_SIZE
+            self.notify()
             
+            self._data = self.chosenAlgorithm
+            self._state = self.SELECT_ALGORITHM
+            self.notify()
+
+            self._data = self.filename
+            self._state = self.chosenFileJob
+            self.notify()
+
+            self._state = self.GENERATE_MAZES
+            self.notify()
+            self._state = self.SOLVE_MAZES
+            self.notify()
 
 
-            self.variables["sizes"] = self.sizes
-            self.variables[self.chosenFileJob] = self.handleFileResult()
-            self.variables["filename"] = self.filename
-            self.variables["alg"] = self.chosenAlgorithm
-            print(self.variables)
+
+
+            #self.variables["sizes"] = self.sizes
+            #self.variables[self.chosenFileJob] = self.handleFileResult()
+            #self.variables["filename"] = self.filename
+            #self.variables["alg"] = self.chosenAlgorithm
+            #print(self.variables)
         else:
-            print("Sizes can not be empty!")
+            print("One or more fields are missing input!")
 
 
     #Calls backend to open up plotting window.
