@@ -15,7 +15,7 @@ from FileFacade import FileFacade
 from Plotting import Plotting
 from View import View
 from Model import Model
-
+from Gui import GUI
 
 class Controller(object):
     # static variables.
@@ -215,7 +215,7 @@ class Controller(object):
 
 
 if __name__ == '__main__':
-    view = View()
+    view = GUI(IView)
     model = Model.getInstance()
     c = Controller.getInstance(view, model)
     c.runProgram()

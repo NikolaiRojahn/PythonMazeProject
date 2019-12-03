@@ -77,6 +77,8 @@ class GUI(view):
     #Calls backend to open up plotting window.
     def getPlotting(self):
         print("Requested plotting")
+        self._state = self.SHOW_GRAPHS
+        self.notify()
         #Somehow calls backend with a reference to the plotting recently created.
 
 
