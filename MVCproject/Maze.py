@@ -6,10 +6,11 @@ import sys
 # needed for DFS...
 sys.setrecursionlimit(10000)
 
+
 class Maze:
-    maze = None
-    convertedMaze = None
-    solvedMaze = None
+    maze = None  # generated 'raw' maze consisting of directions.
+    convertedMaze = None  # a human friendly representation of the maze.
+    solvedMaze = None  # The solved maze, 3 indicating point visited.
     #gridMaze = None
 
     # Q&D pseudo overload of constructor.
@@ -81,4 +82,5 @@ class Maze:
         return string
 
     def setSolvedMaze(self):
-        self.solvedMaze = copy.deepcopy(self.convertedMaze) #deepcopy fordi listen indeholder flere lister
+        # deepcopy fordi listen indeholder flere lister
+        self.solvedMaze = copy.deepcopy(self.convertedMaze)
