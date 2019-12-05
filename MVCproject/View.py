@@ -24,6 +24,7 @@ class View(IView):
             8: ("Solve mazes", self.solveMazes),
             9: ("Show graphs", self.showGraphs)
         }
+        # self.start()
 
     @property
     def state(self):
@@ -34,7 +35,9 @@ class View(IView):
         return self._data
 
     def attach(self, observer):
+        print(len(self.observers))
         self.observers.append(observer)
+        print(len(self.observers))
 
     def getState(self) -> str:
         return self.state
@@ -63,6 +66,7 @@ class View(IView):
 
     def addMazeSizes(self):
         self._data = input("Type maze sizes separated with commas: ")
+        print(self._data)
         self._state = View.ADD_MAZE_SIZE
         self.notify()
 

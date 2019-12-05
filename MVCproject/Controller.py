@@ -20,7 +20,7 @@ from Gui import GUI
 class Controller(object):
     # static variables.
     __instance = None
-
+ 
     @staticmethod
     def getInstance(view: IView, model):
         # is instance reference None, call constructor.
@@ -33,6 +33,7 @@ class Controller(object):
     def __init__(self, view, model):
         self.model = model
         self.view = view
+        print(self.view)
         # observe state changes in the view.
         self.view.attach(self)
         self.model.attach(self.onMazesGenerated)
@@ -99,7 +100,7 @@ class Controller(object):
             self.model.clearMazeSizes()
 
             # split input array
-            input = map(lambda x: int(x), self.view.getData().split(','))
+            input = map(lambda x: int(x.strip()), self.view.getData().split(','))
             # remove any new values already in current values.
             newSizes = list(filter(lambda x: int(
                 x) not in currentSizes, input))
@@ -213,9 +214,8 @@ class Controller(object):
             return True
         return False
 
-
 if __name__ == '__main__':
-    view = GUI(IView)
+    view = GUI()
     model = Model.getInstance()
     c = Controller.getInstance(view, model)
     c.runProgram()
