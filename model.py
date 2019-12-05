@@ -108,7 +108,7 @@ class Model(object):
         result = True  # return value presuming all is ok.
 
         try:
-            opts, args = getopt.getopt(
+            opts, _ = getopt.getopt(
                 arguments, "hs:i:o:", ["alg-generate", "alg-solve"])
         except getopt.GetoptError as err:
             result = err.msg + "\n" + self.usage
@@ -137,15 +137,15 @@ class Model(object):
     def addMazeSize(self, size: int):
         """Adds a maze size, TimerTotal and CounterTotal objects to the collections."""
         self.sizes.append(abs(size))
-        #self.timerTotals.append(TimerTotal())
-        #self.counterTotals.append(CounterTotal())
+        # self.timerTotals.append(TimerTotal())
+        # self.counterTotals.append(CounterTotal())
 
     def clearMazeSizes(self):
         """Clears sizes, mazes, timerTotals and counterTotals in the model. """
         self.sizes.clear()
         self.mazes.clear()
-        #self.timerTotals.clear()
-        #self.counterTotals.clear()
+        # self.timerTotals.clear()
+        # self.counterTotals.clear()
 
     def setSolveAlgorithm(self, arg: str) -> str:
         """
@@ -185,7 +185,7 @@ class Model(object):
         for size in self.sizes:
             mazeSubList = list()
             self.mazes.append(mazeSubList)
-            for i in range(10):
+            for _ in range(10):
                 s.acquire()
                 obj = Maze(size)
                 self.mutex.acquire()
@@ -252,7 +252,7 @@ class Model(object):
 
     def showGraphs(self):
         """Calls plotting lib for showing graphs of maze solving times and iterations."""
-        #print(self.makeDictionaryWithListToPlotting())
+        # print(self.makeDictionaryWithListToPlotting())
         plotting = Plotting(self.makeDictionaryWithListToPlotting())
         plotting.plotting()
 
