@@ -8,7 +8,7 @@ from Timer import Timer
 from TimerTotal import TimerTotal
 from csvFileWriter import csvFileWriter
 from csvFileReader import csvFileReader
-# from Calculator import Calculator
+from Calculator import Calculator
 from Interfaces import ISolveAlgorithm, IView
 from DepthFirst import DepthFirst
 from FileFacade import FileFacade
@@ -20,7 +20,7 @@ from Gui import GUI
 class Controller(object):
     # static variables.
     __instance = None
-
+ 
     @staticmethod
     def getInstance(view: IView, model):
         # is instance reference None, call constructor.
@@ -33,6 +33,7 @@ class Controller(object):
     def __init__(self, view, model):
         self.model = model
         self.view = view
+        print(self.view)
         # observe state changes in the view.
         self.view.attach(self)
         self.model.attach(self.onMazesGenerated)
@@ -98,22 +99,18 @@ class Controller(object):
             # clear previous collections in model.
             self.model.clearMazeSizes()
 
-            try:
-                # split input array
-                input = map(lambda x: int(x), self.view.getData().split(','))
-                # remove any new values already in current values.
-                newSizes = list(filter(lambda x: int(
-                    x) not in currentSizes, input))
+            # split input array
+            input = map(lambda x: int(x.strip()), self.view.getData().split(','))
+            # remove any new values already in current values.
+            newSizes = list(filter(lambda x: int(
+                x) not in currentSizes, input))
 
-                allsizes = currentSizes + newSizes
-                allsizes.sort()
-                # store current and new values in model.
-                for size in allsizes:
-                    self.model.addMazeSize(int(size))
-                return "The following maze sizes are stored: " + str(self.model.sizes)
-            except BaseException as e:
-                raise Exceptions.UserFriendlyException(
-                    "Maze sizes are invalid, " + str(e))
+            allsizes = currentSizes + newSizes
+            allsizes.sort()
+            # store current and new values in model.
+            for size in allsizes:
+                self.model.addMazeSize(int(size))
+            return "The following maze sizes are stored: " + str(self.model.sizes)
 
         if (self.view.getState() == self.view.SHOW_MAZE_SIZES):
             if (verbose):
@@ -154,7 +151,7 @@ class Controller(object):
                 #iterationsTuple = self.model.plottingIterationValues()
 
                 # mazesize, timeMin, timeMax, timeAvg, iterationsMin, iterationsMax, iterationsAvg
-                # plotting = Plotting(self.model.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
+                #plotting = Plotting(self.model.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
                 #                    iterationsTuple[0], iterationsTuple[2], iterationsTuple[1])
 
                 # print(self.model.makeDictionaryWithListToPlotting())
@@ -216,7 +213,6 @@ class Controller(object):
         if (self.state == self.model.MAZES_SOLVED):
             return True
         return False
-
 
 if __name__ == '__main__':
     view = GUI()
