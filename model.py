@@ -7,12 +7,12 @@ from CounterTotal import CounterTotal
 from Timer import Timer
 from TimerTotal import TimerTotal
 from csvFileWriter import csvFileWriter
-from Calculator import Calculator
+# from Calculator import Calculator
 from Interfaces import ISolveAlgorithm
 from DepthFirst import DepthFirst
 from FileFacade import FileFacade
 from Plotting import Plotting
-from Threadpool import ThreadPool
+# from Threadpool import ThreadPool
 from threading import Thread, Lock, BoundedSemaphore
 import threading
 import getopt

@@ -2,6 +2,7 @@ import csv
 import platform
 from Maze import Maze
 
+
 class csvFileWriter:
 
     def write(self, mazeArray, fileName, sizes):

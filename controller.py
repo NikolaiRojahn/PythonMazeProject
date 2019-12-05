@@ -8,7 +8,7 @@ from Timer import Timer
 from TimerTotal import TimerTotal
 from csvFileWriter import csvFileWriter
 from csvFileReader import csvFileReader
-from Calculator import Calculator
+# from Calculator import Calculator
 from Interfaces import ISolveAlgorithm, IView
 from DepthFirst import DepthFirst
 from FileFacade import FileFacade
