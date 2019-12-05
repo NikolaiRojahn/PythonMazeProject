@@ -13,7 +13,7 @@ from Interfaces import ISolveAlgorithm, IView
 from DepthFirst import DepthFirst
 from FileFacade import FileFacade
 from Plotting import Plotting
-from view import View
+from View import View
 from Model import Model
 from Gui import GUI
 
