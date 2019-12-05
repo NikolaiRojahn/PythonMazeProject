@@ -98,18 +98,22 @@ class Controller(object):
             # clear previous collections in model.
             self.model.clearMazeSizes()
 
-            # split input array
-            input = map(lambda x: int(x), self.view.getData().split(','))
-            # remove any new values already in current values.
-            newSizes = list(filter(lambda x: int(
-                x) not in currentSizes, input))
+            try:
+                # split input array
+                input = map(lambda x: int(x), self.view.getData().split(','))
+                # remove any new values already in current values.
+                newSizes = list(filter(lambda x: int(
+                    x) not in currentSizes, input))
 
-            allsizes = currentSizes + newSizes
-            allsizes.sort()
-            # store current and new values in model.
-            for size in allsizes:
-                self.model.addMazeSize(int(size))
-            return "The following maze sizes are stored: " + str(self.model.sizes)
+                allsizes = currentSizes + newSizes
+                allsizes.sort()
+                # store current and new values in model.
+                for size in allsizes:
+                    self.model.addMazeSize(int(size))
+                return "The following maze sizes are stored: " + str(self.model.sizes)
+            except BaseException as e:
+                raise Exceptions.UserFriendlyException(
+                    "Maze sizes are invalid, " + str(e))
 
         if (self.view.getState() == self.view.SHOW_MAZE_SIZES):
             if (verbose):
@@ -150,7 +154,7 @@ class Controller(object):
                 #iterationsTuple = self.model.plottingIterationValues()
 
                 # mazesize, timeMin, timeMax, timeAvg, iterationsMin, iterationsMax, iterationsAvg
-                #plotting = Plotting(self.model.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
+                # plotting = Plotting(self.model.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
                 #                    iterationsTuple[0], iterationsTuple[2], iterationsTuple[1])
 
                 # print(self.model.makeDictionaryWithListToPlotting())
