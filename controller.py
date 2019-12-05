@@ -17,6 +17,7 @@ from View import View
 from Model import Model
 from Gui import GUI
 
+
 class Controller(object):
     # static variables.
     __instance = None
@@ -219,7 +220,13 @@ class Controller(object):
 
 
 if __name__ == '__main__':
-    view = GUI()
+    # Demonstrates the dependency injection.
+    # python Controller.py cli -> CLI UI is used, otherwise GUI.
+    args = sys.argv[1:]
+    if (len(args) >= 1 and args[0] == "cli"):
+        view = View()
+    else:
+        view = GUI()
     model = Model.getInstance()
     c = Controller.getInstance(view, model)
     c.runProgram()
