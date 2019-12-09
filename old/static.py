@@ -4,19 +4,25 @@ class Demo():
     def __init__(self, dynamicVariable):
         self.dynamicVariable = dynamicVariable
 
-    def printStatic(self):
-        print(self.staticVariable)
-        
+    def printStaticVariables(self):
+        print(self.dynamicVariable + ".staticVariable: " + self.staticVariable)
+        print("Demo.staticVariable: " + Demo.staticVariable)
+
+
 if __name__ == '__main__':
     a = Demo("a")
     b = Demo("b")
 
-    print(a.staticVariable)
-    a.printStatic()
     print(a.dynamicVariable)
-    print(b.staticVariable)
+    a.printStaticVariables()
     print(b.dynamicVariable)
-    Demo.staticVariable = "Im excited"
-    print(a.staticVariable)
-    print(b.staticVariable)
+    b.printStaticVariables()
+
+    # changes copy of Demo.staticVariable of instance a.
+    print("\nChanging a.staticVariable to \"Im excited\"...")
+    a.staticVariable = "Im excited"
+    print("Changing Demo.staticVariable to \"Im still static\"...\n")
+    Demo.staticVariable = "Im still static"
+    a.printStaticVariables()
+    b.printStaticVariables()
     print(Demo.staticVariable)
