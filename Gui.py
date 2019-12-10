@@ -3,7 +3,7 @@ from Interfaces import IView
 import Exceptions
 
 class GUI(IView):
-    
+
     chosenAlgorithm = "dfs"
     chosenFileJob = ""
     filename = ""
@@ -17,7 +17,7 @@ class GUI(IView):
         return self._state
     @state.setter
     def state(self, value):
-        print("state going from " + self.state + " to " + value)
+        #print("state going from " + self.state + " to " + value)
         self._state = value
         
     
@@ -43,7 +43,7 @@ class GUI(IView):
 
     def notify(self):
 
-        print("Notifying " + str(len(self.observers)) + " observers")
+        #print("Notifying " + str(len(self.observers)) + " observers")
         for observer in self.observers:
             # Q&D this view just prints result of observer update if no exception is thrown.
             try:
@@ -62,16 +62,16 @@ class GUI(IView):
             self.setFileName()
 
             #Handle _state and _data in order for the backend to fetch.
+            self._data = self.filename
+            self.state = self.chosenFileJob
+            self.notify()
+
             self._data = self.inputSizes.get()
             self.state = self.ADD_MAZE_SIZE
             self.notify()
             
             self._data = self.chosenAlgorithm
             self.state = self.SELECT_ALGORITHM
-            self.notify()
-
-            self._data = self.filename
-            self.state = self.chosenFileJob
             self.notify()
 
             self.state = self.GENERATE_MAZES
@@ -87,7 +87,6 @@ class GUI(IView):
         print("Requested plotting")
         self.state = self.SHOW_GRAPHS
         self.notify()
-        #Somehow calls backend with a reference to the plotting recently created.
 
 
     #Checks the selected option for filejob, and sets the variable chosenFileJob with the syntax the backend needs.    
@@ -102,7 +101,9 @@ class GUI(IView):
 
     #Checks if any of the input field or option menu's has wrong input.
     def checkForWrongInput(self): 
-        if(self.inputSizes.get() is not "" and self.inputFilename.get() is not ""):
+        if(self.inputSizes.get() is not "" and self.selectedFileJob.get() is not "read"):
+            return True
+        if(self.selectedFileJob is "read" and self.inputSizes.get() is ""):
             return True
         return False
 
@@ -129,13 +130,13 @@ class GUI(IView):
     def initTemplate(self):
         self.master = Tk()
         self.master.title("MAZE APPLICATION")
-        algorithms = ['dfs'] 
-        selectedAlgorithm = StringVar()
-        selectedAlgorithm.set(algorithms[0])
+        self.algorithms = ['dfs'] 
+        self.selectedFileJob = StringVar()
+        self.selectedFileJob.set("")
+        self.selectedAlgorithm = StringVar()
+        self.selectedAlgorithm.set(algorithms[0])
 
         filehandling = ['write', 'read']
-        selectedFileJob = StringVar()
-        selectedFileJob.set("")
 
         #Create and display sizes label and input field.
         self.labelSizes = Label(self.master, text="Sizes")
@@ -152,7 +153,7 @@ class GUI(IView):
         #Create option menu for filehandling.
         self.labelFileJob = Label(self.master, text="Filehandling")
         self.labelFileJob.grid(row=7, column=1)
-        self.popupFileJob = OptionMenu(self.master, selectedFileJob, *filehandling, command=self.handleFileInput)
+        self.popupFileJob = OptionMenu(self.master, self.selectedFileJob, *filehandling, command=self.handleFileInput)
         self.popupFileJob.grid(row=8, column=1)
         
         #Create and display RUN PROGRAM button.
@@ -162,6 +163,13 @@ class GUI(IView):
         #Create and display plotting button.
         self.buttonGetPlotting = Button(self.master, text="Get plotting", command=self.getPlotting)
         self.buttonGetPlotting.grid(row=10, column=3)
+    
+
+        #Create and display message box.
+        self.labelMessageBox = Label(self.master, text="Message box")
+        self.labelMessageBox.grid(row=2, column=3)
+        self.entryMessage = Entry(self.master, state=DISABLED)
+        self.entryMessage.grid(row=3, column=3)
 
         self.master.mainloop()
 
