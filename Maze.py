@@ -31,6 +31,14 @@ class Maze:
         self.convertedMaze = self.convert(self.maze)
         #self.gridMaze = self.ConvertedStrMazeToGridOfInt(self.convertedMaze)
 
+    def hasEndPoint(self, matrix: list):
+        """ Returns a boolean indicating whether exactly one sublist of the matrix has an end point. """
+
+        # loop through matrix, which is a list of (sub)lists,
+        # for each sublist run a lambda that checks if 2 is in sublist.
+        return len(list(filter(lambda sublist: 2 in sublist,
+                               matrix))) == 1
+
     def DFG(self, maze, coords=(0, 0)):
         directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
         shuffle(directions)
