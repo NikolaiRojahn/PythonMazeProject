@@ -49,5 +49,5 @@ class TestMaze(unittest.TestCase):
     def test_MazeHasNoEndPoint(self):
         expected = False        
         mazeNoEnd = [sublist if 2 not in sublist else self.removeEndPoint(sublist) for sublist in self.generatedMaze]        
-        actual = self.testMaze.hasEndPoint(list(mazeNoEnd))
+        actual = self.testMaze.hasEndPoint(mazeNoEnd)
         self.assertEqual(expected, actual)
