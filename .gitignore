@@ -123,5 +123,7 @@ dmypy.json
 
 # Ignore csv files
 .csv
+*.csv
+/__pycache__/
 /MVCproject/*.csv
 /MVCproject/__pycache__/

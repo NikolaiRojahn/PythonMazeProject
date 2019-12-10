@@ -17,6 +17,7 @@ from View import View
 from Model import Model
 from Gui import GUI
 
+
 class Controller(object):
     # static variables.
     __instance = None
@@ -48,7 +49,7 @@ class Controller(object):
             Controller.__instance = self
 
     def runProgram(self):
-        # Start the view's menu and listen for changes.
+        # Start the view.
         self.view.start()
 
     def update(self, verbose=False) -> str:
@@ -73,7 +74,7 @@ class Controller(object):
                 return self.model.inputfile + " was successfully read."
             except BaseException as e:
                 raise Exceptions.UserFriendlyException(
-                    self.model.inputfile + " could not be read: " + str(e))
+                    "The file '" + self.model.inputfile + "' could not be read.")
                 # return self.model.inputfile + " could not be read: " + str(e)
 
         if (self.view.getState() == self.view.WRITE_TO_FILE):
@@ -86,7 +87,7 @@ class Controller(object):
                 return self.model.outputfile + " was successfully written."
             except BaseException as e:
                 raise Exceptions.UserFriendlyException(
-                    self.model.outputfile + " could not be written: " + str(e))
+                    "The file '" + self.model.outputfile + "' could not be written.")
 
         if (self.view.getState() == self.view.ADD_MAZE_SIZE):
             if (verbose):
@@ -219,7 +220,13 @@ class Controller(object):
 
 
 if __name__ == '__main__':
-    view = GUI()
+    # Demonstrates the dependency injection.
+    # python Controller.py cli -> CLI UI is used, otherwise GUI.
+    args = sys.argv[1:]
+    if (len(args) >= 1 and args[0] == "cli"):
+        view = View()
+    else:
+        view = GUI()
     model = Model.getInstance()
     c = Controller.getInstance(view, model)
     c.runProgram()

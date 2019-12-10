@@ -134,7 +134,7 @@ class GUI(IView):
         self.selectedFileJob = StringVar()
         self.selectedFileJob.set("")
         self.selectedAlgorithm = StringVar()
-        self.selectedAlgorithm.set(algorithms[0])
+        self.selectedAlgorithm.set(self.algorithms[0])
 
         filehandling = ['write', 'read']
 
@@ -147,7 +147,7 @@ class GUI(IView):
         #Create and display alg. label & dropdown menu.
         self.labelAlgorithm = Label(self.master, text="Gen. alg")
         self.labelAlgorithm.grid(row=4, column=1)
-        self.popupAlgorithm = OptionMenu(self.master, selectedAlgorithm, *algorithms, command=self.func)
+        self.popupAlgorithm = OptionMenu(self.master, self.selectedAlgorithm, *self.algorithms, command=self.func)
         self.popupAlgorithm.grid(row=5, column=1)
 
         #Create option menu for filehandling.
