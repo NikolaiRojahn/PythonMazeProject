@@ -114,7 +114,7 @@ class Controller(object):
                 return "The following maze sizes are stored: " + str(self.model.sizes)
             except BaseException as e:
                 raise Exceptions.UserFriendlyException(
-                    "Maze sizes are invalid, " + str(e))
+                    "Maze sizes are crap, " + str(e))
 
         if (self.view.getState() == self.view.SHOW_MAZE_SIZES):
             if (verbose):

@@ -1,14 +1,9 @@
 from tkinter import *
+from tkinter.messagebox import showerror
 from Interfaces import IView
 import Exceptions
 
 class GUI(IView):
-
-    chosenAlgorithm = "dfs"
-    chosenFileJob = ""
-    filename = ""
-    variables = {}
-    sizes = ""
     _state = ""
     _data = ""
 
@@ -46,48 +41,59 @@ class GUI(IView):
         #print("Notifying " + str(len(self.observers)) + " observers")
         for observer in self.observers:
             # Q&D this view just prints result of observer update if no exception is thrown.
-            try:
-                print(observer.update())
-            except Exceptions.UserFriendlyException as e:
-                print(str(e))
+            #try:
+                observer.update()
+            #except Exceptions.UserFriendlyException as e:
+            #    self.errorMsg = str(e)
+            #    self.handleErrorMessage()
 
 
     #Method which updates the current chosen algorithm.
-    def func(self, value):
+    def updateChosenAlgorithm(self, value):
         self.chosenAlgorithm = value
 
     #Method which is called when RUN button is clicked.
     def runProgram(self):
-        if(self.checkForWrongInput()):
-            self.setFileName()
-
-            #Handle _state and _data in order for the backend to fetch.
-            self._data = self.filename
-            self.state = self.chosenFileJob
-            self.notify()
-
-            self._data = self.inputSizes.get()
-            self.state = self.ADD_MAZE_SIZE
-            self.notify()
+        try:
+            if(self.checkForWrongInput()):
+                self.setFileName()
             
-            self._data = self.chosenAlgorithm
-            self.state = self.SELECT_ALGORITHM
-            self.notify()
+                #Handle _state and _data in order for the backend to fetch.
+                self._data = self.inputSizes.get()
+                self.state = self.ADD_MAZE_SIZE
+                self.notify()
 
-            self.state = self.GENERATE_MAZES
-            self.notify()
-            self.state = self.SOLVE_MAZES
-            self.notify()
-        else:
-            print("One or more fields are missing input!")
+                self.state = self.GENERATE_MAZES
+                self.notify()
+
+                self._data = self.filename
+                self.state = self.chosenFileJob
+                self.notify()
+                
+                self._data = self.chosenAlgorithm
+                self.state = self.SELECT_ALGORITHM
+                self.notify()
+
+                self.state = self.SOLVE_MAZES
+                self.notify()
+            else:
+                print("One or more fields are missing input!")
+        except BaseException as e:
+            print("Catched BaseException in RunProgram method")
+            self.errorMsg = str(e)
+            self.handleErrorMessage()
+
 
 
     #Calls backend to open up plotting window.
     def getPlotting(self):
         print("Requested plotting")
-        self.state = self.SHOW_GRAPHS
-        self.notify()
-
+        try:
+            self.state = self.SHOW_GRAPHS
+            self.notify()
+        except Exception as e:
+            self.errorMsg = e
+            self.handleErrorMessage()
 
     #Checks the selected option for filejob, and sets the variable chosenFileJob with the syntax the backend needs.    
     def handleFileInput(self, value):
@@ -127,6 +133,9 @@ class GUI(IView):
             return "-i"
 
 
+    def handleErrorMessage(self):
+        showerror(title = "Error", message = self.errorMsg)
+
     def initTemplate(self):
         self.master = Tk()
         self.master.title("MAZE APPLICATION")
@@ -135,6 +144,11 @@ class GUI(IView):
         self.selectedFileJob.set("")
         self.selectedAlgorithm = StringVar()
         self.selectedAlgorithm.set(self.algorithms[0])
+        self.chosenAlgorithm = "dfs"
+        self.chosenFileJob = ""
+        self.filename = ""
+        self.sizes = ""
+        self.errorMsg = "Dette er en fejl som er predefineret"
 
         filehandling = ['write', 'read']
 
@@ -147,7 +161,7 @@ class GUI(IView):
         #Create and display alg. label & dropdown menu.
         self.labelAlgorithm = Label(self.master, text="Gen. alg")
         self.labelAlgorithm.grid(row=4, column=1)
-        self.popupAlgorithm = OptionMenu(self.master, self.selectedAlgorithm, *self.algorithms, command=self.func)
+        self.popupAlgorithm = OptionMenu(self.master, self.selectedAlgorithm, *self.algorithms, command=self.updateChosenAlgorithm)
         self.popupAlgorithm.grid(row=5, column=1)
 
         #Create option menu for filehandling.
@@ -162,15 +176,17 @@ class GUI(IView):
 
         #Create and display plotting button.
         self.buttonGetPlotting = Button(self.master, text="Get plotting", command=self.getPlotting)
-        self.buttonGetPlotting.grid(row=10, column=3)
+        self.buttonGetPlotting.grid(row=24, column=3)
     
 
-        #Create and display message box.
-        self.labelMessageBox = Label(self.master, text="Message box")
-        self.labelMessageBox.grid(row=2, column=3)
-        self.entryMessage = Entry(self.master, state=DISABLED)
-        self.entryMessage.grid(row=3, column=3)
+        # #Create and display message box.
+        # self.labelMessageBox = Label(self.master, text="Message box")
+        # self.labelMessageBox.grid(row=2, column=3)
+        # self.entryMessage = Entry(self.master, state=DISABLED, size=)
+        # self.entryMessage.grid(row=3, column=3)
 
+        # self.buttonTestError = Button(self.master, text="Test Exception", command=self.handleErrorMessage)
+        # self.buttonTestError.grid(row=10, column=4)
         self.master.mainloop()
 
 
