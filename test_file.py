@@ -1,5 +1,5 @@
 import unittest
-from Model import Model
+from model import Model
 from Maze import Maze
 from Interfaces import ISolveAlgorithm
 from DepthFirst import DepthFirst
@@ -53,6 +53,7 @@ class TestMaze(unittest.TestCase):
         mazeNoEnd = [sublist if 2 not in sublist else self.removeEndPoint(sublist) for sublist in self.generatedMaze]        
         actual = self.testMaze.hasEndPoint(mazeNoEnd)
         self.assertEqual(expected, actual)
+<<<<<<< HEAD
 
     def test_searchMaze(self):
         expected = True
@@ -70,3 +71,27 @@ class TestMaze(unittest.TestCase):
 
     if __name__ == '__main__':
         unittest.main()
+=======
+    
+    def test_wallAllAround(self):
+        expected = 1
+        listWall = list()
+        listWall.extend(self.generatedMaze[0])
+        listWall.extend(self.generatedMaze[len(self.generatedMaze) - 1])
+        listWall.extend([item for elem in list(map(lambda z: [z[0], z[-1]],self.generatedMaze)) for item in elem])
+        actual = sum(listWall)/len(listWall)
+        self.assertEqual(expected, actual)
+
+    def test_make_empty_maze5(self):
+        testBool = True
+        empty_maze = self.testMaze.make_empty_maze()
+        if len(empty_maze) is not self.testMaze.size:
+            testBool = False
+        for a in empty_maze:
+            if len(a) is not self.testMaze.size:
+                testBool = False
+        self.assertTrue(testBool)
+
+#if __name__ == '__main__':
+#    unittest.main()
+>>>>>>> cf575cef453ef4bc37ffad02e6059f3ffa316aa0
