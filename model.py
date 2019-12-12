@@ -222,7 +222,7 @@ class Model(object):
         for mazeList in self.mazes:
             for maze in mazeList:
                 s.acquire()
-                result: (Timer, Counter) = sa.solve(maze)
+                result: (Timer, Counter) = sa.solve(maze.convertedMaze)
                 self.mutex.acquire()
                 self.mazeOptions[maze.size][0].addTimeToMazeSolutionTimesList(
                     result[0].GetTimer())

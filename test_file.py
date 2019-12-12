@@ -3,7 +3,8 @@ from Model import Model
 from Maze import Maze
 from Interfaces import ISolveAlgorithm
 from DepthFirst import DepthFirst
-
+from Counter import Counter
+from Timer import Timer
 
 class TestMaze(unittest.TestCase):
     # test data
@@ -40,6 +41,7 @@ class TestMaze(unittest.TestCase):
     def __init__(self, methodName):
         super().__init__(methodName)
         self.testMaze = Maze(5)
+        self.df = DepthFirst()
 
     def test_MazeHasEndpoint(self):        
         expected = True
@@ -51,3 +53,20 @@ class TestMaze(unittest.TestCase):
         mazeNoEnd = [sublist if 2 not in sublist else self.removeEndPoint(sublist) for sublist in self.generatedMaze]        
         actual = self.testMaze.hasEndPoint(mazeNoEnd)
         self.assertEqual(expected, actual)
+
+    def test_searchMaze(self):
+        expected = True
+        counterObject = Counter()
+        actual = self.df.search(self.generatedMaze, 1, 1, counterObject, False)                       
+        self.assertEqual(expected, actual)
+
+    def test_solveMaze(self):
+        expected = True
+        actual = self.df.solve(self.generatedMaze) is not None
+        # print(actual)
+        # if(actual is not None):
+        #     expected == True
+        self.assertEqual(expected, actual)
+
+    if __name__ == '__main__':
+        unittest.main()

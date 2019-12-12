@@ -10,32 +10,27 @@ class DepthFirst(ISolveAlgorithm):
         pass
 
     # implement ISolveAlgorithm.
-    def solve(self, maze: Maze) -> (Timer, Counter):
+    def solve(self, convertedMaze) -> (Timer, Counter):
         """Solves a maze and counts iterations and time consumption."""
         counter = Counter()
         timer = Timer()
-        self.maze = maze
-        self.maze.setSolvedMaze()
 
         timer.StartTimer()
-        self.__search(1, 1, counter)
+        self.search(convertedMaze, 1, 1, counter)
         timer.EndTimer()
         return (timer, counter)
 
     # private method that implements depth first solving algorithm.
-    def __search(self, x, y, counter: Counter, verbose=False):
-        #if self.maze.convertedMaze[x][y] == 2:
-        if self.maze.solvedMaze[x][y] == 2:
+    def search(self, convertedMaze: list, x, y, counter: Counter, verbose=False) -> bool:       
+        if convertedMaze[x][y] == 2:
             if verbose:
                 print("found at %d,%d" % (x, y))
             return True
-        #elif self.maze.convertedMaze[x][y] == 1:
-        elif self.maze.solvedMaze[x][y] == 1:
+        elif convertedMaze[x][y] == 1:
             if verbose:
                 print('wall at %d,%d' % (x, y))
             return (False)
-        #elif self.maze.convertedMaze[x][y] == 3:
-        elif self.maze.solvedMaze[x][y] == 3:
+        elif convertedMaze[x][y] == 3:
             counter.AddToCounterList('visited at %d,%d' % (x, y))
             if verbose:
                 print('visited at %d,%d' % (x, y))
@@ -43,19 +38,11 @@ class DepthFirst(ISolveAlgorithm):
         if verbose:
             print('visiting %d,%d' % (x, y))
         # mark as visited
-        #self.maze.convertedMaze[x][y] = 3
-        self.maze.solvedMaze[x][y] = 3
-        # explore neighbors clockwise starting by the one on the right
-        #if ((x < (len(self.maze.convertedMaze)-1) and self.__search(x+1, y, counter, verbose))
-        #    or (y > 0 and self.__search(x, y-1, counter, verbose))
-        #    or (x > 0 and self.__search(x-1, y, counter, verbose))
-        #        or (y < len(self.maze.convertedMaze)-1 and self.__search(x, y+1, counter, verbose))):
-        #    return True
-        #return False
+        convertedMaze[x][y] = 3
 
-        if ((x < (len(self.maze.solvedMaze)-1) and self.__search(x+1, y, counter, verbose))
-            or (y > 0 and self.__search(x, y-1, counter, verbose))
-            or (x > 0 and self.__search(x-1, y, counter, verbose))
-                or (y < len(self.maze.solvedMaze)-1 and self.__search(x, y+1, counter, verbose))):
+        if ((x < (len(convertedMaze)-1) and self.search(convertedMaze, x+1, y, counter, verbose))
+            or (y > 0 and self.search(convertedMaze, x, y-1, counter, verbose))
+            or (x > 0 and self.search(convertedMaze, x-1, y, counter, verbose))
+                or (y < len(convertedMaze)-1 and self.search(convertedMaze, x, y+1, counter, verbose))):
             return True
         return False
