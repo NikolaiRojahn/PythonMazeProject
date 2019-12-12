@@ -13,7 +13,8 @@ from DepthFirst import DepthFirst
 from FileFacade import FileFacade
 from Plotting import Plotting
 # from Threadpool import ThreadPool
-from threading import Thread, Lock, BoundedSemaphore
+# from threading import Thread, Lock, BoundedSemaphore
+from threading import Thread, Lock, Semaphore
 import threading
 import getopt
 import time
@@ -173,6 +174,14 @@ class Model(object):
             self.sizes = result[1]  # the sizes read in from file.
             self.makeDictionaryForMazeTimerAndCounter()
 
+    def generateSingleMaze(self, size, mazeSubList):
+        obj = Maze(size)
+        self.mutex.acquire()
+        mazeSubList.append(obj)
+        self.onEvent()
+        self.mutex.release()
+        self.checkGeneratedOrSolved(self.MAZES_GENERATED, "All mazes are generated")
+
     def generateMazes(self):
         """Generates mazes if sizes are set up."""
         if len(self.sizes) <= 0:
@@ -180,21 +189,61 @@ class Model(object):
 
         # self.mazes.clear()
         self.count = 0
-        s = threading.BoundedSemaphore(3)
+        #s = threading.BoundedSemaphore(3)
+        #s = threading.Semaphore(3)
         self.makeDictionaryForMazeTimerAndCounter()
         for size in self.sizes:
             mazeSubList = list()
             self.mazes.append(mazeSubList)
             for _ in range(10):
-                s.acquire()
-                obj = Maze(size)
-                self.mutex.acquire()
-                mazeSubList.append(obj)
-                self.onEvent()
-                self.mutex.release()
-                s.release()
-        self.checkGeneratedOrSolved(
-            self.MAZES_GENERATED, "All mazes are generated")
+                thread = threading.Thread(target=self.generateSingleMaze, args=(size, mazeSubList))
+                thread.start()
+                #s.acquire()
+                #obj = Maze(size)
+                #self.mutex.acquire()
+                #mazeSubList.append(obj)
+                #self.onEvent()
+                #self.mutex.release()
+                #s.release()
+        #self.checkGeneratedOrSolved(
+        #    self.MAZES_GENERATED, "All mazes are generated")
+
+    # def generateMazes(self):
+    #     """Generates mazes if sizes are set up."""
+    #     if len(self.sizes) <= 0:
+    #         raise Exception("No maze sizes in system. Try adding sizes first.")
+
+    #     # self.mazes.clear()
+    #     self.count = 0
+    #     #s = threading.BoundedSemaphore(3)
+    #     s = threading.Semaphore(3)
+    #     self.makeDictionaryForMazeTimerAndCounter()
+    #     for size in self.sizes:
+    #         mazeSubList = list()
+    #         self.mazes.append(mazeSubList)
+    #         for _ in range(10):
+    #             s.acquire()
+    #             obj = Maze(size)
+    #             self.mutex.acquire()
+    #             mazeSubList.append(obj)
+    #             self.onEvent()
+    #             self.mutex.release()
+    #             s.release()
+    #     self.checkGeneratedOrSolved(
+    #         self.MAZES_GENERATED, "All mazes are generated")  
+
+    def solveSingleMaze(self, sa, maze):
+        #s.acquire()
+        result: (Timer, Counter) = sa.solve(maze)
+        self.mutex.acquire()
+        self.mazeOptions[maze.size][0].addTimeToMazeSolutionTimesList(
+            result[0].GetTimer())
+        self.mazeOptions[maze.size][1].addCounterToMazeSolutionCountersList(
+            result[1].GetNumberOfPointsVisited())
+        self.onEvent()
+        self.mutex.release()
+        self.checkGeneratedOrSolved(self.MAZES_SOLVED, "All mazes are solved")
+        #s.release() 
 
     def solveMazes(self):
         """Solves mazes using selected solving algorithm."""
@@ -218,20 +267,66 @@ class Model(object):
         #     # loop through actual mazes and time the solution.
         #     for maze in mazeList:
         self.count = 0
-        s = threading.BoundedSemaphore(3)
+        #s = threading.BoundedSemaphore(3)
         for mazeList in self.mazes:
             for maze in mazeList:
-                s.acquire()
-                result: (Timer, Counter) = sa.solve(maze)
-                self.mutex.acquire()
-                self.mazeOptions[maze.size][0].addTimeToMazeSolutionTimesList(
-                    result[0].GetTimer())
-                self.mazeOptions[maze.size][1].addCounterToMazeSolutionCountersList(
-                    result[1].GetNumberOfPointsVisited())
-                self.onEvent()
-                self.mutex.release()
-                s.release()
-        self.checkGeneratedOrSolved(self.MAZES_SOLVED, "All mazes are solved")
+                thread = threading.Thread(target=self.solveSingleMaze, args=(sa, maze))
+                thread.start()
+                #-------------
+                #result: (Timer, Counter) = sa.solve(maze)
+                #self.mazeOptions[maze.size][0].addTimeToMazeSolutionTimesList(
+                #result[0].GetTimer())
+                #self.mazeOptions[maze.size][1].addCounterToMazeSolutionCountersList(
+                #result[1].GetNumberOfPointsVisited())
+                #-------------
+                #s.acquire()
+                #result: (Timer, Counter) = sa.solve(maze)
+                #self.mutex.acquire()
+                #self.mazeOptions[maze.size][0].addTimeToMazeSolutionTimesList(
+                #    result[0].GetTimer())
+                #self.mazeOptions[maze.size][1].addCounterToMazeSolutionCountersList(
+                #    result[1].GetNumberOfPointsVisited())
+                #self.onEvent()
+                #self.mutex.release()
+                #s.release()
+        #self.checkGeneratedOrSolved(self.MAZES_SOLVED, "All mazes are solved")        
+
+    # def solveMazes(self):
+    #     """Solves mazes using selected solving algorithm."""
+    #     # set up instance of solving algorithm.
+    #     sa: ISolveAlgorithm = None
+    #     if self.solveAlgorithm == "dfs":
+    #         sa: ISolveAlgorithm = DepthFirst()
+    #     else:
+    #         raise NotImplementedError
+
+    #     if len(self.mazes) == 0:
+    #         raise Exception(
+    #             "No generated mazes in system. Try generating mazes first.")
+
+    #     # # loop through outer maze container collection.
+    #     # for i, mazeList in enumerate(self.mazes):
+    #     #     # get corresponding TimerTotal and Counter objects.
+    #     #     timerTotal = self.timerTotals[i]
+    #     #     counterTotal = self.counterTotals[i]
+
+    #     #     # loop through actual mazes and time the solution.
+    #     #     for maze in mazeList:
+    #     self.count = 0
+    #     s = threading.BoundedSemaphore(3)
+    #     for mazeList in self.mazes:
+    #         for maze in mazeList:
+    #             s.acquire()
+    #             result: (Timer, Counter) = sa.solve(maze)
+    #             self.mutex.acquire()
+    #             self.mazeOptions[maze.size][0].addTimeToMazeSolutionTimesList(
+    #                 result[0].GetTimer())
+    #             self.mazeOptions[maze.size][1].addCounterToMazeSolutionCountersList(
+    #                 result[1].GetNumberOfPointsVisited())
+    #             self.onEvent()
+    #             self.mutex.release()
+    #             s.release()
+    #     self.checkGeneratedOrSolved(self.MAZES_SOLVED, "All mazes are solved")
 
     def checkGeneratedOrSolved(self, state, text):
         if self.count == (len(self.sizes) * 10):
