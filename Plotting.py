@@ -1,6 +1,8 @@
-import matplotlib
 import matplotlib.pyplot as plt
-#import multiprocessing
+import matplotlib as mpl
+mpl.use('TkAgg')  # use tKinter as rendering backend.
+# import multiprocessing
+
 
 class Plotting:
     def __init__(self, plottingDict):
@@ -12,12 +14,12 @@ class Plotting:
         self.iterationsMax = plottingDict["maxIterations"]
         self.iterationsAvg = plottingDict["avgIterations"]
 
-    def plotting(self):
-    #def plottingGUI(self):
+    def plotting(self) -> mpl.pyplot.Figure:
+        # def plottingGUI(self):
         x = list(range(len(self.mazesize)))
 
         fig, (size, iterations) = plt.subplots(1, 2)
-        
+
         size.plot(x, self.timeMin, color='red', label='Minimum Time')
         size.plot(x, self.timeMax, color='green', label='Maximum Time')
         size.plot(x, self.timeAvg, color='orange', label='Average Time')
@@ -28,9 +30,12 @@ class Plotting:
         size.set_ylabel("Time (ms)")
         size.legend(loc='best')
 
-        iterations.plot(x, self.iterationsMin, color='red', label='Minimum Iterations')
-        iterations.plot(x, self.iterationsMax, color='green', label='Maximum Iterations')
-        iterations.plot(x, self.iterationsAvg, color='orange', label='Average Iterations')
+        iterations.plot(x, self.iterationsMin, color='red',
+                        label='Minimum Iterations')
+        iterations.plot(x, self.iterationsMax, color='green',
+                        label='Maximum Iterations')
+        iterations.plot(x, self.iterationsAvg, color='orange',
+                        label='Average Iterations')
         iterations.set_title("Maze solution iterations")
         plt.sca(iterations)
         plt.xticks(range(len(self.mazesize)), self.mazesize)
@@ -38,13 +43,24 @@ class Plotting:
         iterations.set_ylabel("Iterations")
         iterations.legend(loc='best')
 
-        mng = plt.get_current_fig_manager()
-        mng.window.showMaximized()
+        # mng = plt.get_current_fig_manager()
 
-        plt.show()
+        # mng.window.showMaximized()
 
-    #def plotting(self):
-        #self.plottingGUI()
-        #p = multiprocessing.Process(target=self.plottingGUI, args=())
-        #p.start()
-        #p.join()
+        # plt.show()
+        return fig
+
+    def showGraphs(self, figure: mpl.pyplot.Figure):
+        print(figure)
+        plt.clf()
+        plt.figure(figure)
+        # mng = plt.get_current_fig_manager()
+
+        # mng.window.showMaximized()
+        # plt.show()
+
+    # def plotting(self):
+        # self.plottingGUI()
+        # p = multiprocessing.Process(target=self.plottingGUI, args=())
+        # p.start()
+        # p.join()

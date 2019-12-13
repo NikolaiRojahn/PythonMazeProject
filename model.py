@@ -17,6 +17,7 @@ from threading import Thread, Lock, BoundedSemaphore
 import threading
 import getopt
 import time
+import matplotlib
 
 
 class Model(object):
@@ -250,11 +251,11 @@ class Model(object):
                 raise Exception(
                     "No generated mazes to write to file. Try generating mazes first.")
 
-    def showGraphs(self):
+    def showGraphs(self) -> matplotlib.pyplot.Figure:
         """Calls plotting lib for showing graphs of maze solving times and iterations."""
         # print(self.makeDictionaryWithListToPlotting())
         plotting = Plotting(self.makeDictionaryWithListToPlotting())
-        plotting.plotting()
+        return plotting.plotting()
 
     def makeListToPlotting(self) -> (list, list, list, list, list, list, list):
         sizes = self.sizes

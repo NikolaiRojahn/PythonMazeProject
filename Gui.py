@@ -1,5 +1,6 @@
+import matplotlib
 from tkinter import *
-
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter.messagebox import showerror
 from Interfaces import IView
 import Exceptions
@@ -44,7 +45,13 @@ class GUI(IView):
         for observer in self.observers:
             # Q&D this view just prints result of observer update if no exception is thrown.
             # try:
-            self.statusBar['text'] = observer.update()
+            if (self.state == IView.SHOW_GRAPHS):
+                canvas = FigureCanvasTkAgg(
+                    observer.update(), master=self.master)
+                canvas.draw()
+                canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
+            else:
+                self.statusBar['text'] = observer.update()
             # except Exceptions.UserFriendlyException as e:
             #    self.errorMsg = str(e)
             #    self.handleErrorMessage()
@@ -120,9 +127,9 @@ class GUI(IView):
     def createFilenameInputField(self):
         # Create input field for filename
         self.labelFilename = Label(self.labelFrame1, text="Filename")
-        self.labelFilename.grid(row=7, column=2)
+        self.labelFilename.grid(row=8, column=1)
         self.inputFilename = Entry(self.labelFrame1)
-        self.inputFilename.grid(row=8, column=2)
+        self.inputFilename.grid(row=9, column=1)
 
     # Returns the value depending on the filejob
     def handleFileResult(self):
@@ -135,6 +142,8 @@ class GUI(IView):
         showerror(title="Error", message=self.errorMsg)
 
     def initTemplate(self):
+        padx = 10
+        pady = 10
         self.master = Tk()
         self.master.geometry('500x500')
         self.master.title("MAZE APPLICATION")
@@ -153,18 +162,17 @@ class GUI(IView):
 
         # Create a status bar.
         self.statusBar = Label(
-            self.master, text="Ready to work...", bd=1, relief=SUNKEN, anchor=W)
+            self.master, text="Ready to work...", bd=1, relief=SUNKEN, anchor=W, padx=5, pady=5)
         self.statusBar.pack(side=BOTTOM, fill=X)
         # Create 2 labelled frames
         # 1 for the buttons and functions part
         # 1 for the graphs part.
-        self.labelFrame1 = LabelFrame(
-            self.master, text="Configuration", width=200)
-        self.labelFrame1.pack(side="left", expand=1, fill=X)
-
         labelFrame2 = LabelFrame(
-            self.master, text="Maze graphs", width=300)
-        labelFrame2.pack(side="right", expand=1, fill="both")
+            self.master, text="Maze graphs", width=300, padx=padx, pady=pady)
+        labelFrame2.pack(side=RIGHT, expand=YES, fill=BOTH)
+        self.labelFrame1 = LabelFrame(
+            self.master, text="Configuration", padx=padx, pady=pady)
+        self.labelFrame1.pack(expand=YES, fill=BOTH)
 
         # Create and display sizes label and input field.
         self.labelSizes = Label(self.labelFrame1, text="Sizes")
@@ -181,20 +189,20 @@ class GUI(IView):
 
         # Create option menu for filehandling.
         self.labelFileJob = Label(self.labelFrame1, text="Filehandling")
-        self.labelFileJob.grid(row=7, column=1)
+        self.labelFileJob.grid(row=6, column=1)
         self.popupFileJob = OptionMenu(
             self.labelFrame1, self.selectedFileJob, *filehandling, command=self.handleFileInput)
-        self.popupFileJob.grid(row=8, column=1)
+        self.popupFileJob.grid(row=7, column=1)
 
         # Create and display RUN PROGRAM button.
         self.buttonSizes = Button(
             self.labelFrame1, text="RUN PROGRAM", command=self.runProgram)
-        self.buttonSizes.grid(row=10, column=2)
+        self.buttonSizes.grid(row=10, column=1)
 
         # Create and display plotting button.
         self.buttonGetPlotting = Button(
             labelFrame2, text="Get plotting", command=self.getPlotting)
-        self.buttonGetPlotting.grid(row=24, column=3)
+        self.buttonGetPlotting.grid(row=1, column=1)
 
         # #Create and display message box.
         # self.labelMessageBox = Label(self.master, text="Message box")
