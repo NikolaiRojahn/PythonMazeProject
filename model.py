@@ -22,6 +22,7 @@ import time
 
 class Model(object):
 
+    
     # static variables.
     mutex = Lock()
     __instance = None
