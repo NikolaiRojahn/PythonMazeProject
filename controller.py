@@ -1,5 +1,6 @@
 import sys
 import getopt
+from collections import namedtuple
 import Exceptions
 from Maze import Maze
 from Counter import Counter
@@ -32,6 +33,9 @@ class Controller(object):
 
     # constructor - composition of model, view (dependency injection)
     def __init__(self, view, model):
+        # create a namedtuple to use as return value from update()
+        self.updateTuple = namedtuple('updateTuple', 'text obj')
+
         self.model = model
         self.view = view
         # observe state changes in the view.
@@ -52,39 +56,45 @@ class Controller(object):
         # Start the view.
         self.view.start()
 
-    def update(self, verbose=False) -> str:
+    def update(self, verbose=False) -> ():
         """
-        This method is called whenever e.g. state has changed in the object this Controller observes.
+        This method is called whenever state has changed in the object this Controller observes.
         The Controller interprets the new state and handles it by use of its model.
+        The method then returns an updateTuple with named properties 'text' and 'obj'.                
         """
         if (self.view.getState() == self.view.SELECT_ALGORITHM):
+            algorithm = self.view.getData()
             if (verbose):
                 print("Setting up selected algorithm for solving to " +
-                      self.view.getData())
-            return self.model.setSolveAlgorithm(self.view.getData())
+                      algorithm)
+            # create updateTuple and return it.
+            return self.updateTuple(text=self.model.setSolveAlgorithm(algorithm), obj=None)
+            # return self.model.setSolveAlgorithm(self.view.getData())
 
         if (self.view.getState() == self.view.READ_FROM_FILE):
+            filename = self.view.getData()
             if (verbose):
-                print("Reading from " + self.view.getData())
-            self.model.inputfile = self.view.getData()
+                print("Reading from " + filename)
+            self.model.inputfile = filename
 
             # catch any low-level exceptions here and translate into user friendly error msg.:
             try:
                 self.model.readFile()
-                return self.model.inputfile + " was successfully read."
+                return self.updateTuple(text=self.model.inputfile + " was successfully read.", obj=None)
             except BaseException as e:
                 raise Exceptions.UserFriendlyException(
                     "The file '" + self.model.inputfile + "' could not be read.")
                 # return self.model.inputfile + " could not be read: " + str(e)
 
         if (self.view.getState() == self.view.WRITE_TO_FILE):
+            filename = self.view.getData()
             if (verbose):
-                print("Writing to file: " + self.view.getData())
-            self.model.outputfile = self.view.getData()
+                print("Writing to file: " + filename)
+            self.model.outputfile = filename
             # catch any low-level exceptions here and translate into user friendly error msg.:
             try:
                 self.model.writeFile()
-                return self.model.outputfile + " was successfully written."
+                return self.updateTuple(text=self.model.outputfile + " was successfully written.", obj=None)
             except BaseException as e:
                 raise Exceptions.UserFriendlyException(
                     "The file '" + self.model.outputfile + "' could not be written.")
@@ -111,28 +121,28 @@ class Controller(object):
                 # store current and new values in model.
                 for size in allsizes:
                     self.model.addMazeSize(int(size))
-                return "The following maze sizes are stored: " + str(self.model.sizes)
+                return self.updateTuple(text="The following maze sizes are stored: " + str(self.model.sizes), obj=None)
             except BaseException as e:
                 raise Exceptions.UserFriendlyException(
-                    "Maze sizes are crap, " + str(e))
+                    "Maze sizes are invalid, " + str(e))
 
         if (self.view.getState() == self.view.SHOW_MAZE_SIZES):
             if (verbose):
                 print("Showing maze sizes...")
-            return "The following maze sizes are stored: " + str(self.model.sizes)
+            return self.updateTuple(text="The following maze sizes are stored: " + str(self.model.sizes), obj=None)
 
         if (self.view.getState() == self.view.CLEAR_MAZE_SIZES):
             if (verbose):
                 print("clearing maze sizes...")
             self.model.clearMazeSizes()
-            return "Maze sizes cleared: " + str(self.model.sizes)
+            return self.updateTuple(text="Maze sizes cleared: " + str(self.model.sizes), obj=None)
 
         if (self.view.getState() == self.view.GENERATE_MAZES):
             if (verbose):
                 print("Generating mazes...")
             try:
                 self.model.generateMazes()
-                return str(len(self.model.sizes) * 10) + " mazes generated."
+                return self.updateTuple(text=str(len(self.model.sizes) * 10) + " mazes generated.", obj=None)
             except BaseException as e:
                 raise Exceptions.UserFriendlyException(
                     "Mazes could not be generated: " + str(e))
@@ -142,31 +152,23 @@ class Controller(object):
                 print("Solving mazes...")
             try:
                 self.model.solveMazes()
-                return "Mazes are solved, select 'Show graphs' to see resulting graphs."
+                return self.updateTuple(text="Mazes are solved, select 'Show graphs' to see resulting graphs.", obj=None)
             except BaseException as e:
                 raise Exceptions.UserFriendlyException(
                     "Mazes could not be solved: " + str(e))
 
         if (self.view.getState() == self.view.SHOW_GRAPHS):
+
             if (verbose):
                 print("Showing graphs...")
             try:
-                #timeTuple = self.model.plottingTimeValues()
-                #iterationsTuple = self.model.plottingIterationValues()
-
-                # mazesize, timeMin, timeMax, timeAvg, iterationsMin, iterationsMax, iterationsAvg
-                # plotting = Plotting(self.model.sizes, timeTuple[0], timeTuple[2], timeTuple[1],
-                #                    iterationsTuple[0], iterationsTuple[2], iterationsTuple[1])
-
-                # print(self.model.makeDictionaryWithListToPlotting())
-
-                # plotting = Plotting(self.model.makeDictionaryWithListToPlotting())
-
-                # plotting.plotting()
-
-                self.model.showGraphs()
-
-                return "Graphs are showing in an external window."
+                if isinstance(self.view, GUI):
+                    pyplot = self.model.makeGraphs(True)
+                    return self.updateTuple(text="Showing graphs.", obj=pyplot)
+                else:
+                    pyplot = self.model.makeGraphs(False)
+                    self.model.showGraphs(pyplot)
+                    return self.updateTuple(text="Graphs are showing in an external window.", obj=None)
 
             except BaseException as e:
                 raise Exceptions.UserFriendlyException(

@@ -1,6 +1,8 @@
-import matplotlib
 import matplotlib.pyplot as plt
-#import multiprocessing
+import matplotlib as mpl
+
+# import multiprocessing
+
 
 class Plotting:
     def __init__(self, plottingDict):
@@ -12,12 +14,18 @@ class Plotting:
         self.iterationsMax = plottingDict["maxIterations"]
         self.iterationsAvg = plottingDict["avgIterations"]
 
-    def plotting(self):
-    #def plottingGUI(self):
+    def plotting(self, gui: bool = False) -> mpl.pyplot:
+        """ Creates a mpl.pyplot.Figure based on plottingDict values and returns a referece to matplotlib.pyplot.
+            The method also sets up rendering backend on matplotlib if we use tkinter gui (pass true for gui)
+        """
+        # def plottingGUI(self):
+        if gui:  # use tKinter as rendering backend if we use a Tkinter GUI.
+            mpl.use('TkAgg')
+
         x = list(range(len(self.mazesize)))
 
-        fig, (size, iterations) = plt.subplots(1, 2)
-        
+        _, (size, iterations) = plt.subplots(1, 2)
+
         size.plot(x, self.timeMin, color='red', label='Minimum Time')
         size.plot(x, self.timeMax, color='green', label='Maximum Time')
         size.plot(x, self.timeAvg, color='orange', label='Average Time')
@@ -28,9 +36,12 @@ class Plotting:
         size.set_ylabel("Time (ms)")
         size.legend(loc='best')
 
-        iterations.plot(x, self.iterationsMin, color='red', label='Minimum Iterations')
-        iterations.plot(x, self.iterationsMax, color='green', label='Maximum Iterations')
-        iterations.plot(x, self.iterationsAvg, color='orange', label='Average Iterations')
+        iterations.plot(x, self.iterationsMin, color='red',
+                        label='Minimum Iterations')
+        iterations.plot(x, self.iterationsMax, color='green',
+                        label='Maximum Iterations')
+        iterations.plot(x, self.iterationsAvg, color='orange',
+                        label='Average Iterations')
         iterations.set_title("Maze solution iterations")
         plt.sca(iterations)
         plt.xticks(range(len(self.mazesize)), self.mazesize)
@@ -38,13 +49,10 @@ class Plotting:
         iterations.set_ylabel("Iterations")
         iterations.legend(loc='best')
 
+        return plt
+
+    def showGraphs(self, plt):
+        """Shows graphs in external window invoked by the matplotlib.pyplot instance passed in."""
         mng = plt.get_current_fig_manager()
         mng.window.showMaximized()
-
         plt.show()
-
-    #def plotting(self):
-        #self.plottingGUI()
-        #p = multiprocessing.Process(target=self.plottingGUI, args=())
-        #p.start()
-        #p.join()

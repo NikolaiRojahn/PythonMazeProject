@@ -18,6 +18,7 @@ from threading import Thread, Lock, Semaphore
 import threading
 import getopt
 import time
+import matplotlib
 
 
 class Model(object):
@@ -359,11 +360,19 @@ class Model(object):
                 raise Exception(
                     "No generated mazes to write to file. Try generating mazes first.")
 
-    def showGraphs(self):
-        """Calls plotting lib for showing graphs of maze solving times and iterations."""
-        # print(self.makeDictionaryWithListToPlotting())
-        plotting = Plotting(self.makeDictionaryWithListToPlotting())
-        plotting.plotting()
+    def makeGraphs(self, gui: bool = False) -> matplotlib.pyplot:
+        """Calls plotting lib for showing graphs of maze solving times and iterations.
+           If gui is true, the matplotlib.pyplot instance is returned to the controller. """
+        self.plotting = Plotting(self.makeDictionaryWithListToPlotting())
+        return self.plotting.plotting(gui)
+
+    def showGraphs(self, plt: matplotlib.pyplot):
+        """Displays graphs in external window. Ideal for use cases with CLI-like views"""
+        if self.plotting != None:
+            self.plotting.showGraphs(plt)
+        else:
+            raise BaseException(
+                "Plotting could not be opened in external window. No self.plotting in Model instance.")
 
     def makeListToPlotting(self) -> (list, list, list, list, list, list, list):
         sizes = self.sizes
