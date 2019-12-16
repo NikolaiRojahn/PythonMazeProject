@@ -14,9 +14,9 @@ class Plotting:
         self.iterationsMax = plottingDict["maxIterations"]
         self.iterationsAvg = plottingDict["avgIterations"]
 
-    def plotting(self, gui: bool = False) -> mpl.pyplot.Figure:
-        """ Creates a mpl.pyplot.Figure based on plottingDict values and returns it.
-            The method also sets up rendering backend on matplotlib if we use tkinter gui.
+    def plotting(self, gui: bool = False) -> mpl.pyplot:
+        """ Creates a mpl.pyplot.Figure based on plottingDict values and returns a referece to matplotlib.pyplot.
+            The method also sets up rendering backend on matplotlib if we use tkinter gui (pass true for gui)
         """
         # def plottingGUI(self):
         if gui:  # use tKinter as rendering backend if we use a Tkinter GUI.
@@ -49,16 +49,10 @@ class Plotting:
         iterations.set_ylabel("Iterations")
         iterations.legend(loc='best')
 
-        # mng = plt.get_current_fig_manager()
-
-        # mng.window.showMaximized()
-
-        # plt.show()
-
-        # return fig
         return plt
 
     def showGraphs(self, plt):
+        """Shows graphs in external window invoked by the matplotlib.pyplot instance passed in."""
         mng = plt.get_current_fig_manager()
         mng.window.showMaximized()
         plt.show()

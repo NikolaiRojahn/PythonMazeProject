@@ -50,11 +50,13 @@ class GUI(IView):
             text, obj = observer.update()
 
             if (self.state == IView.SHOW_GRAPHS):
+                # store pyplot instance on self for correct exit of app.
                 self.pyplotObject = obj
                 if self.tk_widget is not None:
                     self.tk_widget.pack_forget()  # clear previous drawing.
+
                 self.canvas = FigureCanvasTkAgg(
-                    obj.gcf(), master=self.labelFrame2)
+                    obj.gcf(), master=self.labelFrame2)  # place current figure of pyplot in labelFrame2.
                 self.tk_widget = self.canvas.get_tk_widget()
                 self.canvas.draw()
                 self.tk_widget.pack(side=TOP, fill=BOTH, expand=1)
@@ -151,10 +153,9 @@ class GUI(IView):
         showerror(title="Error", message=self.errorMsg)
 
     def quit(self):
-        print("vi lukker nu")
         if self.pyplotObject is not None:
+            # kill thread(s) in matplotlib.pyplot to exit properly.
             self.pyplotObject.close('all')
-
         self.master.destroy()
 
     def initTemplate(self):
