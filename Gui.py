@@ -22,6 +22,7 @@ class GUI(IView):
     def __init__(self):
         self.observers = list()
         self.tk_widget = None
+        self.pyplotObject = None
 
     def start(self):
         self.initTemplate()
@@ -49,9 +50,11 @@ class GUI(IView):
             text, obj = observer.update()
 
             if (self.state == IView.SHOW_GRAPHS):
+                self.pyplotObject = obj
                 if self.tk_widget is not None:
-                    self.tk_widget.pack_forget()
-                self.canvas = FigureCanvasTkAgg(obj, master=self.labelFrame2)
+                    self.tk_widget.pack_forget()  # clear previous drawing.
+                self.canvas = FigureCanvasTkAgg(
+                    obj.gcf(), master=self.labelFrame2)
                 self.tk_widget = self.canvas.get_tk_widget()
                 self.canvas.draw()
                 self.tk_widget.pack(side=TOP, fill=BOTH, expand=1)
@@ -147,10 +150,18 @@ class GUI(IView):
     def handleErrorMessage(self):
         showerror(title="Error", message=self.errorMsg)
 
+    def quit(self):
+        print("vi lukker nu")
+        if self.pyplotObject is not None:
+            self.pyplotObject.close('all')
+
+        self.master.destroy()
+
     def initTemplate(self):
         padx = 10
         pady = 10
         self.master = Tk()
+        self.master.protocol("WM_DELETE_WINDOW", self.quit)
         self.master.geometry('500x500')
         self.master.title("MAZE APPLICATION")
         self.algorithms = ['dfs']

@@ -124,7 +124,7 @@ class Controller(object):
                 return self.updateTuple(text="The following maze sizes are stored: " + str(self.model.sizes), obj=None)
             except BaseException as e:
                 raise Exceptions.UserFriendlyException(
-                    "Maze sizes are crap, " + str(e))
+                    "Maze sizes are invalid, " + str(e))
 
         if (self.view.getState() == self.view.SHOW_MAZE_SIZES):
             if (verbose):
@@ -163,11 +163,11 @@ class Controller(object):
                 print("Showing graphs...")
             try:
                 if isinstance(self.view, GUI):
-                    figure = self.model.makeGraphs(True)
-                    return self.updateTuple(text="Showing graphs.", obj=figure)
+                    pyplot = self.model.makeGraphs(True)
+                    return self.updateTuple(text="Showing graphs.", obj=pyplot)
                 else:
-                    figure = self.model.makeGraphs(False)
-                    self.model.showGraphs()
+                    pyplot = self.model.makeGraphs(False)
+                    self.model.showGraphs(pyplot)
                     return self.updateTuple(text="Graphs are showing in an external window.", obj=None)
 
             except BaseException as e:

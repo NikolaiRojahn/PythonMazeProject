@@ -258,10 +258,10 @@ class Model(object):
         self.plotting = Plotting(self.makeDictionaryWithListToPlotting())
         return self.plotting.plotting(gui)
 
-    def showGraphs(self):
+    def showGraphs(self, plt):
         """Displays graphs in external window. Ideal for use cases with CLI-like views"""
         if self.plotting != None:
-            self.plotting.showGraphs()
+            self.plotting.showGraphs(plt)
         else:
             raise BaseException(
                 "Plotting could not be opened in external window. No self.plotting in Model instance.")

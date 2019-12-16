@@ -24,7 +24,7 @@ class Plotting:
 
         x = list(range(len(self.mazesize)))
 
-        fig, (size, iterations) = plt.subplots(1, 2)
+        _, (size, iterations) = plt.subplots(1, 2)
 
         size.plot(x, self.timeMin, color='red', label='Minimum Time')
         size.plot(x, self.timeMax, color='green', label='Maximum Time')
@@ -54,9 +54,11 @@ class Plotting:
         # mng.window.showMaximized()
 
         # plt.show()
-        return fig
 
-    def showGraphs(self):
+        # return fig
+        return plt
+
+    def showGraphs(self, plt):
         mng = plt.get_current_fig_manager()
         mng.window.showMaximized()
         plt.show()
