@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-mpl.use('TkAgg')  # use tKinter as rendering backend.
+
 # import multiprocessing
 
 
@@ -14,8 +14,14 @@ class Plotting:
         self.iterationsMax = plottingDict["maxIterations"]
         self.iterationsAvg = plottingDict["avgIterations"]
 
-    def plotting(self) -> mpl.pyplot.Figure:
+    def plotting(self, gui: bool = False) -> mpl.pyplot.Figure:
+        """ Creates a mpl.pyplot.Figure based on plottingDict values and returns it.
+            The method also sets up rendering backend on matplotlib if we use tkinter gui.
+        """
         # def plottingGUI(self):
+        if gui:  # use tKinter as rendering backend if we use a Tkinter GUI.
+            mpl.use('TkAgg')
+
         x = list(range(len(self.mazesize)))
 
         fig, (size, iterations) = plt.subplots(1, 2)
@@ -50,17 +56,7 @@ class Plotting:
         # plt.show()
         return fig
 
-    def showGraphs(self, figure: mpl.pyplot.Figure):
-        print(figure)
-        plt.clf()
-        plt.figure(figure)
-        # mng = plt.get_current_fig_manager()
-
-        # mng.window.showMaximized()
-        # plt.show()
-
-    # def plotting(self):
-        # self.plottingGUI()
-        # p = multiprocessing.Process(target=self.plottingGUI, args=())
-        # p.start()
-        # p.join()
+    def showGraphs(self):
+        mng = plt.get_current_fig_manager()
+        mng.window.showMaximized()
+        plt.show()

@@ -92,7 +92,8 @@ class View(IView):
         for observer in self.observers:
             # Q&D this view just prints result of observer update if no exception is thrown.
             try:
-                print(observer.update())
+                result = observer.update()
+                print(result.text)
             except Exceptions.UserFriendlyException as e:
                 print(str(e))
 

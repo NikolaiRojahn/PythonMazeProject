@@ -251,11 +251,20 @@ class Model(object):
                 raise Exception(
                     "No generated mazes to write to file. Try generating mazes first.")
 
-    def showGraphs(self) -> matplotlib.pyplot.Figure:
-        """Calls plotting lib for showing graphs of maze solving times and iterations."""
+    def makeGraphs(self, gui: bool = False) -> matplotlib.pyplot.Figure:
+        """Calls plotting lib for showing graphs of maze solving times and iterations.
+           If gui is true, the matplotlib.pyplot.Figure is returned to the view for embedding. """
         # print(self.makeDictionaryWithListToPlotting())
-        plotting = Plotting(self.makeDictionaryWithListToPlotting())
-        return plotting.plotting()
+        self.plotting = Plotting(self.makeDictionaryWithListToPlotting())
+        return self.plotting.plotting(gui)
+
+    def showGraphs(self):
+        """Displays graphs in external window. Ideal for use cases with CLI-like views"""
+        if self.plotting != None:
+            self.plotting.showGraphs()
+        else:
+            raise BaseException(
+                "Plotting could not be opened in external window. No self.plotting in Model instance.")
 
     def makeListToPlotting(self) -> (list, list, list, list, list, list, list):
         sizes = self.sizes

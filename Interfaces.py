@@ -54,4 +54,3 @@ class IView(object):
     GENERATE_MAZES = "generateMazes"
     SOLVE_MAZES = "solveMazes"
     SHOW_GRAPHS = "showGraphs"
-    # GUI_SET = "guiSet"  # Only used in Gui - NOT CLI view !!!

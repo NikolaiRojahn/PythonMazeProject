@@ -21,6 +21,7 @@ class GUI(IView):
 
     def __init__(self):
         self.observers = list()
+        self.tk_widget = None
 
     def start(self):
         self.initTemplate()
@@ -45,13 +46,18 @@ class GUI(IView):
         for observer in self.observers:
             # Q&D this view just prints result of observer update if no exception is thrown.
             # try:
+            text, obj = observer.update()
+
             if (self.state == IView.SHOW_GRAPHS):
-                canvas = FigureCanvasTkAgg(
-                    observer.update(), master=self.master)
-                canvas.draw()
-                canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
-            else:
-                self.statusBar['text'] = observer.update()
+                if self.tk_widget is not None:
+                    self.tk_widget.pack_forget()
+                self.canvas = FigureCanvasTkAgg(obj, master=self.labelFrame2)
+                self.tk_widget = self.canvas.get_tk_widget()
+                self.canvas.draw()
+                self.tk_widget.pack(side=TOP, fill=BOTH, expand=1)
+
+            self.statusBar['text'] = text
+
             # except Exceptions.UserFriendlyException as e:
             #    self.errorMsg = str(e)
             #    self.handleErrorMessage()
@@ -92,7 +98,7 @@ class GUI(IView):
             self.errorMsg = str(e)
             self.handleErrorMessage()
 
-    # Calls backend to open up plotting window.
+    # Calls backend to create graphs.
 
     def getPlotting(self):
         print("Requested plotting")
@@ -167,9 +173,9 @@ class GUI(IView):
         # Create 2 labelled frames
         # 1 for the buttons and functions part
         # 1 for the graphs part.
-        labelFrame2 = LabelFrame(
+        self.labelFrame2 = LabelFrame(
             self.master, text="Maze graphs", width=300, padx=padx, pady=pady)
-        labelFrame2.pack(side=RIGHT, expand=YES, fill=BOTH)
+        self.labelFrame2.pack(side=RIGHT, expand=YES, fill=BOTH)
         self.labelFrame1 = LabelFrame(
             self.master, text="Configuration", padx=padx, pady=pady)
         self.labelFrame1.pack(expand=YES, fill=BOTH)
@@ -201,8 +207,8 @@ class GUI(IView):
 
         # Create and display plotting button.
         self.buttonGetPlotting = Button(
-            labelFrame2, text="Get plotting", command=self.getPlotting)
-        self.buttonGetPlotting.grid(row=1, column=1)
+            self.labelFrame2, text="Get plotting", command=self.getPlotting)
+        self.buttonGetPlotting.pack(side=TOP)
 
         # #Create and display message box.
         # self.labelMessageBox = Label(self.master, text="Message box")
