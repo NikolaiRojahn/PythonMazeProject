@@ -1,10 +1,11 @@
-import unittest, copy
+import unittest, copy, functools
 from Model import Model
 from Maze import Maze
 from Interfaces import ISolveAlgorithm
 from DepthFirst import DepthFirst
 from Counter import Counter
 from Timer import Timer
+from functools import reduce
 
 class TestMaze(unittest.TestCase):
     # test data
@@ -69,8 +70,13 @@ class TestMaze(unittest.TestCase):
     def test_wallAllAround(self):
         expected = 1
         listWall = list()
+        # top and bottom are all walls.
         listWall.extend(self.generatedMaze[0])
-        listWall.extend(self.generatedMaze[len(self.generatedMaze) - 1])
-        listWall.extend([item for elem in list(map(lambda z: [z[0], z[-1]],self.generatedMaze)) for item in elem])
-        actual = sum(listWall)/len(listWall)
+        listWall.extend(self.generatedMaze[-1])
+        
+        # for each sublist in maze, make a list of first and last int (lambda), 
+        # add to a list (sublist) and add each value from it to listWall.
+        listWall.extend([value for sublist in list(map(lambda z: [z[0], z[-1]],self.generatedMaze)) for value in sublist])        
+        # use reduce to multiply all one's.
+        actual = reduce((lambda x, y: x*y), listWall)
         self.assertEqual(expected, actual)
