@@ -45,9 +45,7 @@ class FileFacade:
         extension = self.__checkFileType(file)
 
         if (extension == 'csv'):
-            print("reading csv...")
             mazesAllSize = csvFileReader.read(self, file)
-            print("mazeAllSizes: " + str(mazesAllSize))
             sizes = csvFileReader.getSizes()
             print("sizes: " + str(sizes))
             return (mazesAllSize, sizes)
