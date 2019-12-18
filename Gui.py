@@ -35,11 +35,7 @@ class GUI(IView):
         return self.state
 
     def attach(self, observer):
-
-        # print(hex(id(self.observers)))
-        # print(len(self.observers))
         self.observers.append(observer)
-        # print(len(self.observers))
 
     def notify(self):
 
@@ -63,12 +59,7 @@ class GUI(IView):
 
             self.statusBar['text'] = text
 
-            # except Exceptions.UserFriendlyException as e:
-            #    self.errorMsg = str(e)
-            #    self.handleErrorMessage()
-
     # Method which updates the current chosen algorithm.
-
     def updateChosenAlgorithm(self, value):
         print(value)
         self.chosenAlgorithm = value
@@ -90,9 +81,7 @@ class GUI(IView):
 
                 if(self.selectedFileJob != ""):
                     self._data = self.filename
-                    self.state = self.WRITE_TO_FILE if \
-                        self.selectedFileJob == "write" \
-                        else self.READ_FROM_FILE
+                    self.state = self.WRITE_TO_FILE if self.selectedFileJob.get() == "write" else self.READ_FROM_FILE
                     self.notify()
 
                 self._data = self.chosenAlgorithm
@@ -109,7 +98,6 @@ class GUI(IView):
             self.handleErrorMessage()
 
     # Calls backend to create graphs.
-
     def getPlotting(self):
         print("Requested plotting")
         try:
@@ -121,15 +109,8 @@ class GUI(IView):
 
     # Checks the selected option for filejob, and sets the variable chosenFileJob with the syntax the backend needs.
     def handleFileInput(self, value):
-        print(value)
         self.selectedFileJob.set(value)
         self.createFilenameInputField()
-
-        # if(value == "write"):
-        #     self.chosenFileJob = "writeToFile"
-
-        # else:
-        #     self.chosenFileJob = "readFromFile"
 
     # Checks if any of the input field or option menu's has wrong input.
     def checkForWrongInput(self):
@@ -148,13 +129,6 @@ class GUI(IView):
         self.labelFilename.grid(row=8, column=1)
         self.inputFilename = Entry(self.labelFrame1)
         self.inputFilename.grid(row=9, column=1)
-
-    # Returns the value depending on the filejob
-    def handleFileResult(self):
-        if(self.chosenFileJob == "writeToFile"):
-            return "-o"
-        else:
-            return "-i"
 
     def handleErrorMessage(self):
         showerror(title="Error", message=self.errorMsg)
@@ -182,7 +156,6 @@ class GUI(IView):
         self.filename = ""
         self.sizes = ""
         self.errorMsg = "Dette er en fejl som er predefineret"
-
         filehandling = ['write', 'read']
 
         # Create a status bar.
@@ -229,12 +202,4 @@ class GUI(IView):
             self.labelFrame2, text="Get plotting", command=self.getPlotting)
         self.buttonGetPlotting.pack(side=TOP, anchor='w')
 
-        # #Create and display message box.
-        # self.labelMessageBox = Label(self.master, text="Message box")
-        # self.labelMessageBox.grid(row=2, column=3)
-        # self.entryMessage = Entry(self.master, state=DISABLED, size=)
-        # self.entryMessage.grid(row=3, column=3)
-
-        # self.buttonTestError = Button(self.master, text="Test Exception", command=self.handleErrorMessage)
-        # self.buttonTestError.grid(row=10, column=4)
         self.master.mainloop()
