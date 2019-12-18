@@ -235,7 +235,7 @@ class Model(object):
 
     def solveSingleMaze(self, sa, maze):
         #s.acquire()
-        result: (Timer, Counter) = sa.solve(maze)
+        result: (Timer, Counter) = sa.solve(maze.convertedMaze)
         self.mutex.acquire()
         self.mazeOptions[maze.size][0].addTimeToMazeSolutionTimesList(
             result[0].GetTimer())
@@ -271,19 +271,19 @@ class Model(object):
         #s = threading.BoundedSemaphore(3)
         for mazeList in self.mazes:
             for maze in mazeList:
-<<<<<<< HEAD
-                s.acquire()
-                result: (Timer, Counter) = sa.solve(maze.convertedMaze)
-                self.mutex.acquire()
-                self.mazeOptions[maze.size][0].addTimeToMazeSolutionTimesList(
-                    result[0].GetTimer())
-                self.mazeOptions[maze.size][1].addCounterToMazeSolutionCountersList(
-                    result[1].GetNumberOfPointsVisited())
-                self.onEvent()
-                self.mutex.release()
-                s.release()
-        self.checkGeneratedOrSolved(self.MAZES_SOLVED, "All mazes are solved")
-=======
+
+        #         s.acquire()
+        #         result: (Timer, Counter) = sa.solve(maze.convertedMaze)
+        #         self.mutex.acquire()
+        #         self.mazeOptions[maze.size][0].addTimeToMazeSolutionTimesList(
+        #             result[0].GetTimer())
+        #         self.mazeOptions[maze.size][1].addCounterToMazeSolutionCountersList(
+        #             result[1].GetNumberOfPointsVisited())
+        #         self.onEvent()
+        #         self.mutex.release()
+        #         s.release()
+        # self.checkGeneratedOrSolved(self.MAZES_SOLVED, "All mazes are solved")
+
                 thread = threading.Thread(target=self.solveSingleMaze, args=(sa, maze))
                 thread.start()
                 #-------------
@@ -341,11 +341,11 @@ class Model(object):
     #             self.mutex.release()
     #             s.release()
     #     self.checkGeneratedOrSolved(self.MAZES_SOLVED, "All mazes are solved")
->>>>>>> cf575cef453ef4bc37ffad02e6059f3ffa316aa0
+
 
     def checkGeneratedOrSolved(self, state, text):
         if self.count == (len(self.sizes) * 10):
-            print(text)
+            # print(text)
             self.setState(state)
             self.notify()
 

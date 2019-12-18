@@ -20,8 +20,8 @@ class DepthFirst(ISolveAlgorithm):
         timer.EndTimer()
         return (timer, counter)
 
-    # private method that implements depth first solving algorithm.
-    def search(self, convertedMaze: list, x, y, counter: Counter, verbose=False) -> bool:       
+    #  method that implements depth first solving algorithm.
+    def search(self, convertedMaze: list, x, y, counter: Counter, verbose=False) -> bool:
         if convertedMaze[x][y] == 2:
             if verbose:
                 print("found at %d,%d" % (x, y))
@@ -29,12 +29,12 @@ class DepthFirst(ISolveAlgorithm):
         elif convertedMaze[x][y] == 1:
             if verbose:
                 print('wall at %d,%d' % (x, y))
-            return (False)
+            return False
         elif convertedMaze[x][y] == 3:
             counter.AddToCounterList('visited at %d,%d' % (x, y))
             if verbose:
                 print('visited at %d,%d' % (x, y))
-            return (False)
+            return False
         if verbose:
             print('visiting %d,%d' % (x, y))
         # mark as visited

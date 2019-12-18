@@ -1,5 +1,5 @@
-import unittest
-from model import Model
+import unittest, copy
+from Model import Model
 from Maze import Maze
 from Interfaces import ISolveAlgorithm
 from DepthFirst import DepthFirst
@@ -46,14 +46,7 @@ class TestMaze(unittest.TestCase):
     def test_MazeHasEndpoint(self):        
         expected = True
         actual = self.testMaze.hasEndPoint(self.generatedMaze)                           
-        self.assertEqual(expected, actual)
-
-    def test_MazeHasNoEndPoint(self):
-        expected = False        
-        mazeNoEnd = [sublist if 2 not in sublist else self.removeEndPoint(sublist) for sublist in self.generatedMaze]        
-        actual = self.testMaze.hasEndPoint(mazeNoEnd)
-        self.assertEqual(expected, actual)
-<<<<<<< HEAD
+        self.assertEqual(expected, actual)   
 
     def test_searchMaze(self):
         expected = True
@@ -61,17 +54,17 @@ class TestMaze(unittest.TestCase):
         actual = self.df.search(self.generatedMaze, 1, 1, counterObject, False)                       
         self.assertEqual(expected, actual)
 
-    def test_solveMaze(self):
-        expected = True
-        actual = self.df.solve(self.generatedMaze) is not None
-        # print(actual)
-        # if(actual is not None):
-        #     expected == True
+    def test_MazeHasNoEndPoint(self):
+        expected = False        
+        mazeNoEnd = copy.deepcopy(self.generatedMaze)
+        mazeNoEnd = [sublist if 2 not in sublist else self.removeEndPoint(sublist) for sublist in mazeNoEnd]        
+        actual = self.testMaze.hasEndPoint(mazeNoEnd)
         self.assertEqual(expected, actual)
 
-    if __name__ == '__main__':
-        unittest.main()
-=======
+    def test_solveMaze(self):
+        expected = True
+        actual = self.df.solve(self.generatedMaze) is not None        
+        self.assertEqual(expected, actual)
     
     def test_wallAllAround(self):
         expected = 1
@@ -81,17 +74,3 @@ class TestMaze(unittest.TestCase):
         listWall.extend([item for elem in list(map(lambda z: [z[0], z[-1]],self.generatedMaze)) for item in elem])
         actual = sum(listWall)/len(listWall)
         self.assertEqual(expected, actual)
-
-    def test_make_empty_maze5(self):
-        testBool = True
-        empty_maze = self.testMaze.make_empty_maze()
-        if len(empty_maze) is not self.testMaze.size:
-            testBool = False
-        for a in empty_maze:
-            if len(a) is not self.testMaze.size:
-                testBool = False
-        self.assertTrue(testBool)
-
-#if __name__ == '__main__':
-#    unittest.main()
->>>>>>> cf575cef453ef4bc37ffad02e6059f3ffa316aa0

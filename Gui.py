@@ -220,7 +220,7 @@ class GUI(IView):
         # Create and display plotting button.
         self.buttonGetPlotting = Button(
             self.labelFrame2, text="Get plotting", command=self.getPlotting)
-        self.buttonGetPlotting.pack(side=TOP)
+        self.buttonGetPlotting.pack(side=TOP, anchor='w')
 
         # #Create and display message box.
         # self.labelMessageBox = Label(self.master, text="Message box")
