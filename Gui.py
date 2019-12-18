@@ -70,6 +70,7 @@ class GUI(IView):
     # Method which updates the current chosen algorithm.
 
     def updateChosenAlgorithm(self, value):
+        print(value)
         self.chosenAlgorithm = value
 
     # Method which is called when RUN button is clicked.
@@ -79,16 +80,20 @@ class GUI(IView):
                 self.setFileName()
 
                 # Handle _state and _data in order for the backend to fetch.
-                self._data = self.inputSizes.get()
-                self.state = self.ADD_MAZE_SIZE
-                self.notify()
+                if(self.selectedFileJob.get() == "write" or self.selectedFileJob == ""):
+                    self._data = self.inputSizes.get()
+                    self.state = self.ADD_MAZE_SIZE
+                    self.notify()
 
-                self.state = self.GENERATE_MAZES
-                self.notify()
+                    self.state = self.GENERATE_MAZES
+                    self.notify()
 
-                self._data = self.filename
-                self.state = self.chosenFileJob
-                self.notify()
+                if(self.selectedFileJob != ""):
+                    self._data = self.filename
+                    self.state = self.WRITE_TO_FILE if \
+                        self.selectedFileJob == "write" \
+                        else self.READ_FROM_FILE
+                    self.notify()
 
                 self._data = self.chosenAlgorithm
                 self.state = self.SELECT_ALGORITHM
@@ -116,19 +121,21 @@ class GUI(IView):
 
     # Checks the selected option for filejob, and sets the variable chosenFileJob with the syntax the backend needs.
     def handleFileInput(self, value):
-        if(value == "write"):
-            self.chosenFileJob = "writeToFile"
-            self.createFilenameInputField()
+        print(value)
+        self.selectedFileJob.set(value)
+        self.createFilenameInputField()
 
-        else:
-            self.chosenFileJob = "readFromFile"
-            self.createFilenameInputField()
+        # if(value == "write"):
+        #     self.chosenFileJob = "writeToFile"
+
+        # else:
+        #     self.chosenFileJob = "readFromFile"
 
     # Checks if any of the input field or option menu's has wrong input.
     def checkForWrongInput(self):
-        if(self.inputSizes.get() is not "" and self.selectedFileJob.get() is not "read"):
+        if(self.inputSizes.get() != "" and self.selectedFileJob.get() != "read"):
             return True
-        if(self.selectedFileJob is "read" and self.inputSizes.get() is ""):
+        if(self.selectedFileJob.get() == "read" and self.inputSizes.get() == ""):
             return True
         return False
 
