@@ -88,7 +88,7 @@ class Controller(object):
                 return self.updateTuple(text=self.model.inputfile + " was successfully read.", obj=None)
             except BaseException as e:
                 raise Exceptions.UserFriendlyException(
-                    "The file '" + self.model.inputfile + "' could not be read.")
+                    "The file '" + self.model.inputfile + "' could not be read.\n" + str(e))
                 # return self.model.inputfile + " could not be read: " + str(e)
 
         if (self.view.getState() == self.view.WRITE_TO_FILE):

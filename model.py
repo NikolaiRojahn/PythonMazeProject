@@ -146,9 +146,10 @@ class Model(object):
         # self.counterTotals.append(CounterTotal())
 
     def clearMazeSizes(self):
-        """Clears sizes, mazes, timerTotals and counterTotals in the model. """
+        """Clears sizes, mazes and mazeOptions in the model. """
         self.sizes.clear()
         self.mazes.clear()
+        self.mazeOptions = {}
         # self.timerTotals.clear()
         # self.counterTotals.clear()
 
@@ -317,6 +318,7 @@ class Model(object):
 
     def makeDictionaryForMazeTimerAndCounter(self):
         self.mazeOptions.clear()
+        print("Adding keys to mazeOptions: " + str(self.sizes))
         for size in self.sizes:
             if size not in self.mazeOptions:
                 self.mazeOptions[size] = [TimerTotal(), CounterTotal()]

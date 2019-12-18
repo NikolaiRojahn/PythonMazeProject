@@ -15,8 +15,10 @@ class csvFileReader:
         seperatorNewSize = ['EndOfMazeSize']
         mazesAllSizes = []
         mazesSingleSize = []
-    
+
         with open(fileName) as f:
+            # clear sizes or else it might fail on subsequent file reads.
+            csvFileReader.sizes.clear()
             a = 0
             reader = csv.reader(f, delimiter=',')
             maze = []
