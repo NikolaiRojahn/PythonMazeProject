@@ -2,6 +2,7 @@ import csv
 from csvFileWriter import csvFileWriter
 from csvFileReader import csvFileReader
 
+
 class FileFacade:
 
     # static variables.
@@ -21,6 +22,7 @@ class FileFacade:
                 "FileFacade is a singleton, use FileFacade.getInstance() to obtain instance.")
         else:  # no instance yet, store self as instance.
             FileFacade.__instance = self
+            self.csvFileReader = csvFileReader()
 
     def read(self, filename):
         """Reads from the specified filename"""
@@ -44,8 +46,9 @@ class FileFacade:
         extension = self.__checkFileType(file)
 
         if (extension == 'csv'):
-            mazesAllSize = csvFileReader.read(self, file)
-            sizes = csvFileReader.getSizes()
+            mazesAllSize = self.csvFileReader.read(file)
+            sizes = self.csvFileReader.getSizes()
+            print("sizes: " + str(sizes))
             return (mazesAllSize, sizes)
 
     def __checkFileType(self, file):

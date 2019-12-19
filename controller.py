@@ -60,8 +60,13 @@ class Controller(object):
         """
         This method is called whenever state has changed in the object this Controller observes.
         The Controller interprets the new state and handles it by use of its model.
-        The method then returns an updateTuple with named properties 'text' and 'obj'.                
+        The method then returns an updateTuple with named properties 'text' and 'obj'.
+        If the model is working, the controller blocks any action as it awaits the model returning.
         """
+        if (model.getState() == Model.WORKING):
+            raise Exceptions.UserFriendlyException(
+                "Model is busy!\nPlease wait...")
+
         if (self.view.getState() == self.view.SELECT_ALGORITHM):
             algorithm = self.view.getData()
             if (verbose):
@@ -83,7 +88,7 @@ class Controller(object):
                 return self.updateTuple(text=self.model.inputfile + " was successfully read.", obj=None)
             except BaseException as e:
                 raise Exceptions.UserFriendlyException(
-                    "The file '" + self.model.inputfile + "' could not be read.")
+                    "The file '" + self.model.inputfile + "' could not be read.\n" + str(e))
                 # return self.model.inputfile + " could not be read: " + str(e)
 
         if (self.view.getState() == self.view.WRITE_TO_FILE):
@@ -142,7 +147,8 @@ class Controller(object):
                 print("Generating mazes...")
             try:
                 self.model.generateMazes()
-                return self.updateTuple(text=str(len(self.model.sizes) * 10) + " mazes generated.", obj=None)
+                return self.updateTuple(text="Generating mazes, please wait...", obj=None)
+                # return self.updateTuple(text=str(len(self.model.sizes) * 10) + " mazes generated.", obj=None)
             except BaseException as e:
                 raise Exceptions.UserFriendlyException(
                     "Mazes could not be generated: " + str(e))
@@ -152,7 +158,8 @@ class Controller(object):
                 print("Solving mazes...")
             try:
                 self.model.solveMazes()
-                return self.updateTuple(text="Mazes are solved, select 'Show graphs' to see resulting graphs.", obj=None)
+                return self.updateTuple(text="Solving mazes, please wait...", obj=None)
+                # return self.updateTuple(text="Mazes are solved, select 'Show graphs' to see resulting graphs.", obj=None)
             except BaseException as e:
                 raise Exceptions.UserFriendlyException(
                     "Mazes could not be solved: " + str(e))
@@ -209,16 +216,14 @@ class Controller(object):
             exit(1)
 
     def onMazesGenerated(self):
-        self.state = self.model.getState()
-        if (self.state == self.model.MAZES_GENERATED):
-            return True
-        return False
+        """ Called whenever the model has generated all requested mazes."""
+        if self.model.getState() == Model.MAZES_GENERATED:
+            print("onMazesGenerated called.")
 
     def onMazesSolved(self):
-        self.state = self.model.getState()
-        if (self.state == self.model.MAZES_SOLVED):
-            return True
-        return False
+        """ Called whenever the model has solved all mazes. """
+        if self.model.getState() == Model.MAZES_SOLVED:
+            print("onMazesSolved")
 
 
 if __name__ == '__main__':
