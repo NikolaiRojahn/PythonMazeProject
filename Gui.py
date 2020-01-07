@@ -181,7 +181,7 @@ class GUI(IView):
         # Create and display alg. label & dropdown menu.
         self.labelAlgorithm = Label(self.labelFrame1, text="Gen. alg")
         self.labelAlgorithm.grid(row=4, column=1)
-        self.popupAlgorithm = OptionMenu(
+        self.popupAlgorithm = OptionMenu( # frame, defaultvalue, elementer fra liste(* betyder den render alle elementer i listen), command ved valg
             self.labelFrame1, self.selectedAlgorithm, *self.algorithms, command=self.updateChosenAlgorithm)
         self.popupAlgorithm.grid(row=5, column=1)
 

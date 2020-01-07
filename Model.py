@@ -211,6 +211,7 @@ class Model(object):
         # s.acquire()
         result: (Timer, Counter) = sa.solve(maze.convertedMaze)
         self.mutex.acquire()
+        #mazeOptions has TimerTotal on index 0 and CounterTotal on index 1
         self.mazeOptions[maze.size][0].addTimeToMazeSolutionTimesList(
             result[0].GetTimer())
         self.mazeOptions[maze.size][1].addCounterToMazeSolutionCountersList(

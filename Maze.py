@@ -46,13 +46,15 @@ class Maze:
             new_coords = (coords[0] + direction[0], coords[1] + direction[1])
             if (0 <= new_coords[0] < len(maze)) and \
                 (0 <= new_coords[1] < len(maze[0])) and \
-                    not maze[new_coords[0]][new_coords[1]]:
+                    not maze[new_coords[0]][new_coords[1]]: # not checks if list is empty
                 maze[coords[0]][coords[1]].append(direction)
                 maze[new_coords[0]][new_coords[1]].append(
                     (-direction[0], -direction[1]))
                 self.DFG(maze, new_coords)
         return maze
 
+    #For a er højde og For b er bredde
+    #2 dimensionelt array - 1x5x5- hvis size = 5, bruges af DFG-metoden ovenfor
     def make_empty_maze(self):
         maze = [[[] for b in range(self.size)] for a in range(self.size)]
         return maze
