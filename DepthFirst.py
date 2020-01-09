@@ -12,12 +12,18 @@ class DepthFirst(ISolveAlgorithm):
     # implement ISolveAlgorithm.
     def solve(self, convertedMaze) -> (Timer, Counter):
         """Solves a maze and counts iterations and time consumption."""
+        #For hver en maze skal vi angive hvor mange steder der er besøgt (iterations) og hvor lang tid det tog (time)
+        #Derfor laves nedenfor ved hver maze et objekt af "Counter" og "Timer"
         counter = Counter()
         timer = Timer()
 
+        #Denne starter timeren
         timer.StartTimer()
+        #Nendenstående metode bruger bl.a. "counter", som tilføjer en string hver gang mazes har besøgt et punkt i sin søgen på løsningen
         self.search(convertedMaze, 1, 1, counter)
+        #Denne slutter timeren og beregner tiden for løsningen mellem "start" og "end"
         timer.EndTimer()
+        #Her returnerer vi værdierne fra "timer" og "counter" objekterne
         return (timer, counter)
 
     #  method that implements depth first solving algorithm.

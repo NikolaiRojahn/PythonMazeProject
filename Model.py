@@ -30,6 +30,8 @@ class Model(object):
     READY = "ready"  # dummy default state
 
     # static variables.
+    #Mutex er et udtryk for at tråd er låst, og først giver en ny tråd mulighed for at tilgå de resourcer som er låst, når der åbnes igen'
+    #Her sættes mutex til "Lock()"-objektet som kommer fra "threading"-modulet
     mutex = Lock()
     __instance = None
     usage = 'Controller.py -s size1,size2,...,sizeN --alg-solve=<name> [-i <inputfile> -o <outputfile>]'
@@ -52,9 +54,13 @@ class Model(object):
             Model.__instance = self
 
         # set up instance variables.
+        #Laver en tom liste som skal indeholde en subliste med x antal "Maze"-objekter - f.eks. 10 hvis der laves 10 af hver maze.
         self.mazes: list = list()
+        #Laver en tom liste som skal indeholde en liste over angivet størrelser f.eks. [5,10,15]
         self.sizes: list = list()
+        #Laver en tom liste til brug for observer pattern hvor der kan lægges metoder til brug ved senere "notify"-metode
         self.observers: list = list()
+        #Laver et tomt dictionary dette skal senere bruges til at hve hver størrelse/size som key og en liste med "TimerTotal" og "CounterTotal"-objekterne som value
         self.mazeOptions = {}
 
         self.solveAlgorithm = "dfs"
@@ -67,6 +73,7 @@ class Model(object):
 
         self.state = None
 
+        #Initialiserer en tæller startende på 0, denne tæller bruges når vi skal tælle vores tråde op til generering og løsning af mazes for at tjekke om alle tråde er færdige.
         self.count = 0
 
     # inputfile getter
@@ -101,6 +108,7 @@ class Model(object):
     def detach(self, observer):
         self.observers.remove(observer)
 
+    #Bruges til tråde hvor den tæller en fælles tæller "self.count" op med 1 når tråden er kørt færdig
     def onEvent(self):
         self.count += 1
 
@@ -179,12 +187,18 @@ class Model(object):
             self.sizes = result[1]  # the sizes read in from file.
             self.makeDictionaryForMazeTimerAndCounter()
 
+    #Generering af en enkelt/single maze, som bruges i tråde
     def generateSingleMaze(self, size, mazeSubList):
+        #Danner et Maze-objekt ud fra den størrelse (size) som kommer som input
         obj = Maze(size)
+        #Her låser vi den "mazeSubList" som kommer som input da vi skal tilføje en element til listen
+        #Efterfølgende kalder vi metoden "self.onEvent()" som tæller den fælles tæller "self.count" op med 1
         self.mutex.acquire()
         mazeSubList.append(obj)
         self.onEvent()
+        #Efter ovenstående åbner vi låsen igen og giver adgang for næste tråd til at tilgå de to ovenstående resourcer
         self.mutex.release()
+        #Metode som tjekker efter hver tråd om det er den sidste - altså om alle tråede en er færdige
         self.checkGeneratedOrSolved(
             self.MAZES_GENERATED, "All mazes are generated")
 
@@ -196,28 +210,46 @@ class Model(object):
 
         self.setState(Model.WORKING)
 
+        #Sætter en fælles tæller for tråedene til 0, således at man sikre at tælleren "self.count" starter fra 0
         self.count = 0
+        #Nedenstående laver et dictionary hvor hver angiver størrelse/size er key og value er en liste med et "TimerTotal" og "counterTotal"-objekt
         self.makeDictionaryForMazeTimerAndCounter()
+        #Gennemløber alle sizes i "self.sizes"-listen
         for size in self.sizes:
+            #For hver størrelse danne en subliste som skal indeholde et antal mazes af den angivne størrelse
             mazeSubList = list()
+            #Sublisten tilføjes listen "self.mazes".
             self.mazes.append(mazeSubList)
+            #Gennemløb af 10 iterationer
             for _ in range(10):
+                #Nedenstående angiver en definition af en tråd - "target" er metoden tråden skal køre - "args" er de parameter som "target"-metoden tager ind
+                #i vores tilfælde tager den en size som værdi og listen til indsættes af Maze-objektet 
                 thread = threading.Thread(
                     target=self.generateSingleMaze, args=(size, mazeSubList))
+                #Starter den ovenstående definerede tråd    
                 thread.start()
 
     def solveSingleMaze(self, sa, maze):
         """ Solves a single maze and updates the count of solved mazes in total. """
         # s.acquire()
+        #Løser den angivne maze ved hjælp af "solve"-metoden som returnerer en tuple med ("Timer" er tiden for løsningen, "Counter" er antal punkter besøgt for løsningen)
+        #Efterfølgende låser vi "self.mazeOptions" dictionary, således at kun denne tråd kan tilgå det og tælle en fælles tæller "self.onEvent"-metoden
         result: (Timer, Counter) = sa.solve(maze.convertedMaze)
         self.mutex.acquire()
         #mazeOptions has TimerTotal on index 0 and CounterTotal on index 1
+        #Nedenstående tager size fra den maze som tages ind og slår værdien op i dictionry "[maze.size]" efterfølgende referes til value som er en liste og der for "[]" efterfølgende
+        #"[maze.size][0]" er "TimerTotal"-objektet - inde i dette objekt ligger "addTime..."-metode som tager ovenstående "result"-tuple position for "Timer" som er [0] og "getTimer"-metoden
+        #"[maze.size][1]" er "CounterTotal"-objektet - inde i dette objekt ligger "addCounter..."-metode som tager ovenstående "result"-tuple position for "Counter" som er [1]
+        # og "GetNumberOfPointsVisited"-metoden
         self.mazeOptions[maze.size][0].addTimeToMazeSolutionTimesList(
             result[0].GetTimer())
         self.mazeOptions[maze.size][1].addCounterToMazeSolutionCountersList(
             result[1].GetNumberOfPointsVisited())
+        #Efterfølgende kalder vi metoden "self.onEvent()" som tæller den fælles tæller "self.count" op med 1
         self.onEvent()
+        #Efter ovenstående åbner vi låsen igen og giver adgang for næste tråd til at tilgå de to ovenstående resourcer
         self.mutex.release()
+        #Metode som tjekker efter hver tråd om det er den sidste - altså om alle tråede en er færdige
         self.checkGeneratedOrSolved(
             self.MAZES_SOLVED, "All mazes are solved")
         # s.release()
@@ -238,17 +270,26 @@ class Model(object):
                 "No generated mazes in system. Try generating mazes first.")
 
         # loop through actual mazes and time the solution.
+        #Sætter en fælles tæller for tråedene til 0, således at man sikre at tælleren "self.count" starter fra 0
         self.count = 0
         #s = threading.BoundedSemaphore(3)
+        #Gennemløber listen af mazes
         for mazeList in self.mazes:
+            #Gennemløb af ovenstående subliste "mazeList" hvor den tager et "Maze"-objekt "maze"
             for maze in mazeList:
+                #Nedenstående angiver en definition af en tråd - "target" er metoden tråden skal køre - "args" er de parameter som "target"-metoden tager ind
+                #i vores tilfælde tager den en løsningsalgoritme "sa" og et "Maze"-objekt
                 thread = threading.Thread(
                     target=self.solveSingleMaze, args=(sa, maze))
+                #Starter den ovenstående definerede tråd
                 thread.start()
 
+    #Metode til at tjekke for alle tråde er færdig enten for generering af mazes eller løsning af mazes
     def checkGeneratedOrSolved(self, state, text):
+        #Tjekker om alle tråde er færdig ved at tjekke om fælles tælleren matcher værdien af "self.count" og længden listen "self.sizes"*gennemløb(10)
         if self.count == (len(self.sizes) * 10):
             # print(text)
+            #Hvis ovenstående værdier matcher sættes en ny state og køre "notify"-metoden
             self.setState(state)
             self.notify()
 
@@ -277,7 +318,9 @@ class Model(object):
             raise BaseException(
                 "Plotting could not be opened in external window. No self.plotting in Model instance.")
 
+    #Metode som klargør værdierne til plotning i listerne - listerne returneres i en tuple
     def makeListToPlotting(self) -> (list, list, list, list, list, list, list):
+        #Opretter de angivne lister som skal bruges til plotning - kun listen "sizes" har en værdi fra start som er "self.sizes"
         sizes = self.sizes
         minTime: list = list()
         maxTime: list = list()
@@ -286,6 +329,11 @@ class Model(object):
         maxIterations: list = list()
         avgIterations: list = list()
 
+        ##Gennemløber hver en key i dictionary "self.mazeOptions" [k] efterfølgende referes til value som er en liste og der for "[]" efterfølgende
+        #"[k][0]" er "TimerTotal"-objektet - inde i dette objekt tages 3 metoder og lægger værdierne i listen til plotningen - "get..."-metoderne henter 
+        # værdierne fra "TimerTotal"-objektet for den pågældende key [k]
+        #"[k][1]" er "CounterTotal"-objektet - inde i dette objekt tages 3 metoder og lægger værdierne i listen til plotningen - "get..."-metoderne henter 
+        # værdierne fra "CounterTotal"-objektet for den pågældende key [k]
         for k in self.mazeOptions:
             minTime.append(
                 self.mazeOptions[k][0].getMinimumTimeForMazeSolutionTimes())
@@ -300,13 +348,19 @@ class Model(object):
             avgIterations.append(
                 self.mazeOptions[k][1].getAverageCounterForMazeSolutionCounters())
 
+        #Returnerer en tuple med alle ovenstående lister
         return (sizes, minTime, maxTime, avgTime, minIterations, maxIterations, avgIterations)
 
+    #Nedenstående opsætter ovenstående metode med tupler som retur værdi til et samlet Dictionary med færdige lister til plotningen
     def makeDictionaryWithListToPlotting(self) -> {}:
+        #Opretter et nyt tomt dictionary med navnet "plottingDict"
         plottingDict = {}
 
+        #Køre metoden "self.makeListToPlotting" og indsætter retur værdi som "result"
         result = self.makeListToPlotting()
 
+        #Nedenstående indsætter hver en liste fra "result"-tuplen ovenfor med en key i "plottingDict" key er defineret i ['tekst']
+        #"result"-tuplen indeholder flere lister og derfor er det "result['index']"
         plottingDict["sizes"] = result[0]
         plottingDict["minTime"] = result[1]
         plottingDict["maxTime"] = result[2]
@@ -315,11 +369,16 @@ class Model(object):
         plottingDict["maxIterations"] = result[5]
         plottingDict["avgIterations"] = result[6]
 
+        #Returnerer dictionary "plottingDict"
         return plottingDict
 
     def makeDictionaryForMazeTimerAndCounter(self):
+        #Clear "self.mazeOptions" dictionary således det er fri for gamle værdier og klar ved ny generering 
         self.mazeOptions.clear()
         print("Adding keys to mazeOptions: " + str(self.sizes))
+        #Løber hver en størrelse/size igennem
         for size in self.sizes:
+            #Tjekker at den nuværende størrelse/size ikke allerede ligger i dictionary - altså at den ikke prøver at danne 2 keys med samme navn
             if size not in self.mazeOptions:
+                #Nedenstående danner en key i "self.mazeOptions" dictionary med størrelse/size som key og value med en liste med "TimerTotal" og "CounterTotal"-objekt
                 self.mazeOptions[size] = [TimerTotal(), CounterTotal()]
