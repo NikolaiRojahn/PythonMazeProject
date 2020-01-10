@@ -190,8 +190,7 @@ class Model(object):
 
     def generateMazes(self):
         """Generates mazes if sizes are set up."""
-        if len(self.sizes) <= 0:
-            self.setState(Model.READY)
+        if len(self.sizes) <= 0:            
             raise Exception("No maze sizes in system. Try adding sizes first.")
 
         self.setState(Model.WORKING)
@@ -234,6 +233,7 @@ class Model(object):
             raise NotImplementedError
 
         if len(self.mazes) == 0:
+            self.setState(Model.READY)
             raise Exception(
                 "No generated mazes in system. Try generating mazes first.")
 
