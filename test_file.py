@@ -80,3 +80,24 @@ class TestMaze(unittest.TestCase):
         # use reduce to multiply all one's.
         actual = reduce((lambda x, y: x*y), listWall)
         self.assertEqual(expected, actual)
+
+
+# def test_wallAllAround(self):
+#         expected = 1
+#         listWall = list()
+#         # top and bottom are all walls.
+#         multiplyer = lambda x,y: x*y
+#         listWall.append(reduce(multiplyer, self.generatedMaze[0]))
+#         listWall.append(reduce(multiplyer, self.generatedMaze[-1]))
+        
+#         # for each sublist in maze (map), make a list of first and last int (lambda), 
+#         # add the resulting lists to a list (sublist) and add each value from this sublist to listWall.
+#         # listWall.extend([value for sublist in list(map(lambda z: [z[0], z[-1]],self.generatedMaze)) for value in sublist])
+
+#         # for each sublist in maze, multiply first and last item (lambda), 
+#         # put result in a list (map) and reduce this list with multiplyer(), 
+#         # append this result to listWall.
+#         listWall.append(reduce(multiplyer, map(lambda z: z[0]* z[-1],self.generatedMaze)))
+#         # use reduce to multiply all one's.
+#         actual = reduce((lambda x, y: x*y), listWall)
+#         self.assertEqual(expected, actual)
